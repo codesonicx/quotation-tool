@@ -80,7 +80,7 @@ End Sub
 ' Loads all available sections from the active sheet.
 Private Sub LoadSections()
     Dim ws As Worksheet
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim sections() As String
     Dim errorMessage As String
     Dim success As Boolean
@@ -89,7 +89,7 @@ Private Sub LoadSections()
     lstSections.Clear
 
     Set ws = modUtils.GetTargetWorksheet()
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
 
     success = navigator.GetSectionNames(ws, sections, errorMessage)
 

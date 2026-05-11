@@ -157,13 +157,13 @@ End Sub
 
 ' Loads all available section names from the active sheet.
 Private Sub LoadSections()
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim success As Boolean
     Dim errorMessage As String
     Dim sections() As String
     Dim i As Long
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
     Me.cmbSection.Clear
 
     success = navigator.GetSectionNames(ActiveSheet, sections, errorMessage)
@@ -180,7 +180,7 @@ End Sub
 
 ' Loads assemblies for the currently selected section.
 Private Sub LoadAssembliesForSelectedSection()
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim success As Boolean
     Dim errorMessage As String
     Dim assemblies() As String
@@ -190,7 +190,7 @@ Private Sub LoadAssembliesForSelectedSection()
 
     If Me.cmbSection.ListIndex = -1 Then Exit Sub
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
     success = navigator.GetAssembliesInSection( _
         ActiveSheet, _
         Me.cmbSection.value, _

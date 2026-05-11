@@ -14,7 +14,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByVal customData As Collection, _
                                                   ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim sectionManager As clsSectionManager
 
     Dim insertRow As Long
@@ -27,7 +27,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
 
     errorMessage = vbNullString
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
     Set sectionManager = New clsSectionManager
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 

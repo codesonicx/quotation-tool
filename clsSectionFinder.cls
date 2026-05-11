@@ -1,7 +1,7 @@
 Option Explicit
 
 ' =========================================================
-' clsSheetStructureNavigator
+' clsSectionFinder
 '
 ' Purpose:
 ' Provides read/query operations to interpret the worksheet

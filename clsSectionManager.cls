@@ -86,7 +86,7 @@ End Function
 Public Function RemoveSection(ByVal ws As Worksheet, _
                               ByVal sectionName As String, _
                               ByRef errorMessage As String) As Boolean
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim sectionRow As Long
     Dim nextSectionRow As Long
 
@@ -99,9 +99,9 @@ Public Function RemoveSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
 
-    sectionRow = navigator.FindSectionRow(ws, sectionName)
+    sectionRow = sectionFinder.FindSectionRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         RemoveSection = False
@@ -122,7 +122,7 @@ End Function
 Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
                                          ByVal sectionName As String, _
                                          ByRef errorMessage As String) As Boolean
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim assemblyRows() As Long
 
     Dim sectionRow As Long
@@ -134,9 +134,9 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
     Dim columnLetter As String
 
     errorMessage = vbNullString
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
 
-    sectionRow = navigator.FindSectionRow(ws, sectionName)
+    sectionRow = sectionFinder.FindSectionRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         RecalculateSectionTotals = False
@@ -174,7 +174,7 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
                                           ByVal sectionName As String, _
                                           ByVal assemblyName As String, _
                                           ByRef errorMessage As String) As Boolean
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim assemblyRow As Long
     Dim blockEndRow As Long
 
@@ -194,7 +194,7 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
 
     assemblyRow = navigator.FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
     If assemblyRow = 0 Then

@@ -30,7 +30,7 @@ End Sub
 
 
 Private Sub LoadLists()
-    Dim navigator As New clsSheetStructureNavigator
+    Dim sectionFinder As New clsSectionFinder
     Dim assemblyService As New clsAssemblyService
     Dim success As Boolean
     Dim errorMessage As String
@@ -40,7 +40,7 @@ Private Sub LoadLists()
 
     ' Load available sections from the active target sheet.
     Me.SectionList.Clear
-    success = navigator.GetSectionNames(ActiveSheet, sections, errorMessage)
+    success = sectionFinder.GetSectionNames(ActiveSheet, sections, errorMessage)
 
     If success Then
         For i = LBound(sections) To UBound(sections)

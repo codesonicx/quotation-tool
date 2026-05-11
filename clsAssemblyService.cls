@@ -9,7 +9,7 @@ Option Explicit
 ' - inserting one or more assemblies into a target section
 '
 ' This class relies on:
-' - clsSheetStructureNavigator for locating positions in the target sheet
+' - clsSectionFinder for locating positions in the target sheet
 ' =========================================================
 
 ' =========================================================
@@ -78,7 +78,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
                                             ByVal domain As String, _
                                             ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
-    Dim navigator As clsSheetStructureNavigator
+    Dim sectionFinder As clsSectionFinder
     Dim sectionManager As clsSectionManager
 
     Dim sectionRow As Long
@@ -93,7 +93,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
 
     errorMessage = vbNullString
 
-    Set navigator = New clsSheetStructureNavigator
+    Set sectionFinder = New clsSectionFinder
     Set sectionManager = New clsSectionManager
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
@@ -109,7 +109,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
         Exit Function
     End If
 
-    sectionRow = navigator.FindSectionRow(wsTarget, sectionName)
+    sectionRow = sectionFinder.FindSectionRow(wsTarget, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found in the active sheet."
         InsertAssembliesIntoSection = False
