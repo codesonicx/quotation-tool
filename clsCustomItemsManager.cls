@@ -6,24 +6,6 @@ Option Explicit
 ' Purpose:
 ' Manages insertion of custom/manual components into an
 ' existing assembly inside the target worksheet.
-'
-' Responsibilities:
-' - find the correct insert row inside an assembly
-' - copy the manual-entry template row from "Assembly List"
-' - write custom values into the inserted row
-' - write formulas into calculated columns when available
-' =========================================================
-
-' =========================================================
-' Template and worksheet constants
-' =========================================================
-Private Const TEMPLATE_SHEET_NAME As String = "Assembly List"
-Private Const TEMPLATE_NAME_COLUMN As Long = 2                 ' Column B
-Private Const TEMPLATE_LABEL_MANUAL_ENTRY As String = "ME - Manual Entry"
-Private Const TARGET_COPY_START_COLUMN As Long = 2             ' Column B
-
-' =========================================================
-' Public API
 ' =========================================================
 
 Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
@@ -33,6 +15,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
     Dim navigator As clsSheetStructureNavigator
+    Dim sectionManager As clsSectionManager
 
     Dim insertRow As Long
     Dim templateRow As Long
@@ -43,10 +26,12 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     Dim insertedRow As Range
 
     errorMessage = vbNullString
-    Set navigator = New clsSheetStructureNavigator
-    Set wsLib = ThisWorkbook.Worksheets(TEMPLATE_SHEET_NAME)
 
-    ' 1) Find where the custom component should be inserted in the target sheet.
+    Set navigator = New clsSheetStructureNavigator
+    Set sectionManager = New clsSectionManager
+    Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
+
+    ' Find where the custom component should be inserted in the target sheet.
     insertRow = navigator.FindInsertRowForCustomComponent(wsTarget, sectionName, assemblyName)
     If insertRow = 0 Then
         errorMessage = "Could not determine insert row for assembly '" & assemblyName & "' in section '" & sectionName & "'."
@@ -54,54 +39,51 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
         Exit Function
     End If
 
-    ' 2) Find the template row used as the base for manual-entry components.
-    templateRow = FindExactTextInColumn(wsLib, TEMPLATE_NAME_COLUMN, TEMPLATE_LABEL_MANUAL_ENTRY)
+    ' Find the template row used as the base for manual-entry components.
+    templateRow = FindExactTextInColumn(wsLib, COL_LIBRARY_NAME, TEMPLATE_ME_MANUAL_ENTRY)
     If templateRow = 0 Then
-        errorMessage = "Template row '" & TEMPLATE_LABEL_MANUAL_ENTRY & "' was not found in '" & TEMPLATE_SHEET_NAME & "'."
+        errorMessage = "Template row '" & TEMPLATE_ME_MANUAL_ENTRY & "' was not found in '" & SHEET_ASSEMBLY_LIST & "'."
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If
 
-    ' 3) Determine the copy range on the template row from column B to the last used column.
-    lastCol = wsLib.Cells(templateRow, wsLib.Columns.count).End(xlToLeft).Column
-    If lastCol < TARGET_COPY_START_COLUMN Then
-        lastCol = TARGET_COPY_START_COLUMN
+    ' Determine the copy range on the template row from column B to the last used column.
+    lastCol = wsLib.Cells(templateRow, wsLib.Columns.Count).End(xlToLeft).Column
+    If lastCol < COL_COPY_START Then
+        lastCol = COL_COPY_START
     End If
 
     Set src = wsLib.Range( _
-        wsLib.Cells(templateRow, TARGET_COPY_START_COLUMN), _
+        wsLib.Cells(templateRow, COL_COPY_START), _
         wsLib.Cells(templateRow, lastCol))
 
-    ' 4) Insert one row in the target sheet and reset inherited formatting/grouping.
+    ' Insert one row in the target sheet and reset inherited formatting/grouping.
     wsTarget.Rows(insertRow).Insert Shift:=xlShiftDown
     Set insertedRow = wsTarget.Rows(insertRow)
 
     insertedRow.ClearFormats
     insertedRow.ClearOutline
 
-    ' 5) Copy the template row into the inserted target row.
+    ' Copy the template row into the inserted target row.
     Set dst = wsTarget.Range( _
-        wsTarget.Cells(insertRow, TARGET_COPY_START_COLUMN), _
+        wsTarget.Cells(insertRow, COL_COPY_START), _
         wsTarget.Cells(insertRow, lastCol))
 
     src.Copy Destination:=dst
     Application.CutCopyMode = False
     insertedRow.Interior.Pattern = xlNone
 
-    ' 6) Fill values and formulas into the inserted row.
+    ' Fill values and formulas into the inserted row.
     If Not PopulateInsertedCustomRow(wsTarget, insertRow, customData, errorMessage) Then
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If
 
-    Dim sectionManager As clsSectionManager
-    Set sectionManager = New clsSectionManager
-    
     If Not sectionManager.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If
-    
+
     InsertCustomComponentIntoAssembly = True
 End Function
 
@@ -129,44 +111,39 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
 
     errorMessage = vbNullString
 
-    ' Locate important target columns by header name.
-    compCol = FindHeaderColumn(wsTarget, "Component")
-    compDesCol = FindHeaderColumn(wsTarget, "Comp Des.")
-    compBuildCol = FindHeaderColumn(wsTarget, "Comp Build")
-    sectDesCol = FindHeaderColumn(wsTarget, "Sect Des.")
-    sectBuildCol = FindHeaderColumn(wsTarget, "Sect Build")
-    designCol = FindHeaderColumn(wsTarget, "design [h]")
-    constrCol = FindHeaderColumn(wsTarget, "construction [h]")
-    debugCol = FindHeaderColumn(wsTarget, "debug/tryout [h]")
-    installCol = FindHeaderColumn(wsTarget, "installation [h]")
-    startCol = FindHeaderColumn(wsTarget, "start up @ client [h]")
-    matCol = FindHeaderColumn(wsTarget, "Material Rate [$/Build]")
-    compListCol = FindHeaderColumn(wsTarget, "Comp List")
+    compCol = FindHeaderColumn(wsTarget, HEADER_COMPONENT)
+    compDesCol = FindHeaderColumn(wsTarget, HEADER_COMP_DES)
+    compBuildCol = FindHeaderColumn(wsTarget, HEADER_COMP_BUILD)
+    sectDesCol = FindHeaderColumn(wsTarget, HEADER_SECT_DES)
+    sectBuildCol = FindHeaderColumn(wsTarget, HEADER_SECT_BUILD)
+    designCol = FindHeaderColumn(wsTarget, HEADER_DESIGN_HOURS)
+    constrCol = FindHeaderColumn(wsTarget, HEADER_CONSTRUCTION_HOURS)
+    debugCol = FindHeaderColumn(wsTarget, HEADER_DEBUG_HOURS)
+    installCol = FindHeaderColumn(wsTarget, HEADER_INSTALLATION_HOURS)
+    startCol = FindHeaderColumn(wsTarget, HEADER_STARTUP_HOURS)
+    matCol = FindHeaderColumn(wsTarget, HEADER_MATERIAL_RATE)
+    compListCol = FindHeaderColumn(wsTarget, HEADER_COMP_LIST)
 
-    ' The component description column is required.
     If compCol = 0 Then
-        errorMessage = "Column 'Component' was not found in the target sheet."
+        errorMessage = "Column '" & HEADER_COMPONENT & "' was not found in the target sheet."
         PopulateInsertedCustomRow = False
         Exit Function
     End If
 
-    ' Required base values.
-    wsTarget.Cells(targetRow, compCol).value = "[ME] " & CStr(customData("name"))
+    wsTarget.Cells(targetRow, compCol).Value = "[" & DOMAIN_ME & "] " & CStr(customData("name"))
 
     If compDesCol > 0 Then
-        wsTarget.Cells(targetRow, compDesCol).value = CLng(customData("desNum"))
+        wsTarget.Cells(targetRow, compDesCol).Value = CLng(customData("desNum"))
     End If
 
     If compBuildCol > 0 Then
-        wsTarget.Cells(targetRow, compBuildCol).value = CLng(customData("buildNum"))
+        wsTarget.Cells(targetRow, compBuildCol).Value = CLng(customData("buildNum"))
     End If
 
-    ' Optional numbering in "Comp List".
     If compListCol > 0 Then
         WriteComponentListNumber wsTarget, targetRow, compListCol
     End If
 
-    ' Formula-driven values.
     WriteDesignFormula wsTarget, targetRow, designCol, sectDesCol, CDbl(customData("des"))
     WriteBuildFormula wsTarget, targetRow, constrCol, sectBuildCol, CDbl(customData("constr"))
     WriteBuildFormula wsTarget, targetRow, debugCol, sectBuildCol, CDbl(customData("debug"))
@@ -174,7 +151,7 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     WriteBuildFormula wsTarget, targetRow, startCol, sectBuildCol, CDbl(customData("start"))
 
     If matCol > 0 Then
-        wsTarget.Cells(targetRow, matCol).value = CLng(customData("mat"))
+        wsTarget.Cells(targetRow, matCol).Value = CLng(customData("mat"))
     End If
 
     PopulateInsertedCustomRow = True
@@ -212,10 +189,10 @@ End Sub
 Private Sub WriteComponentListNumber(ByVal wsTarget As Worksheet, _
                                      ByVal targetRow As Long, _
                                      ByVal compListCol As Long)
-    If targetRow > 1 And IsNumeric(wsTarget.Cells(targetRow - 1, compListCol).value) Then
-        wsTarget.Cells(targetRow, compListCol).value = CLng(wsTarget.Cells(targetRow - 1, compListCol).value) + 1
+    If targetRow > 1 And IsNumeric(wsTarget.Cells(targetRow - 1, compListCol).Value) Then
+        wsTarget.Cells(targetRow, compListCol).Value = CLng(wsTarget.Cells(targetRow - 1, compListCol).Value) + 1
     Else
-        wsTarget.Cells(targetRow, compListCol).value = 1
+        wsTarget.Cells(targetRow, compListCol).Value = 1
     End If
 End Sub
 
@@ -238,7 +215,7 @@ Private Function FindExactTextInColumn(ByVal ws As Worksheet, _
     If foundCell Is Nothing Then
         FindExactTextInColumn = 0
     Else
-        FindExactTextInColumn = foundCell.row
+        FindExactTextInColumn = foundCell.Row
     End If
 End Function
 
@@ -258,4 +235,3 @@ Private Function FindHeaderColumn(ByVal ws As Worksheet, ByVal headerText As Str
         FindHeaderColumn = foundCell.Column
     End If
 End Function
-

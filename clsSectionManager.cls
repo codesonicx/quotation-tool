@@ -15,14 +15,6 @@ Option Explicit
 ' - rename section
 ' =========================================================
 
-' =========================================================
-' Worksheet structure constants
-' =========================================================
-Private Const SECTION_NAME_COLUMN As Long = 1
-Private Const SECTION_TOTAL_START_COLUMN As Long = 13   'Column M
-Private Const SECTION_TOTAL_END_COLUMN As Long = 32     'Column AF
-Private Const SECTION_BLUE_COLOR_INDEX As Long = 37
-
 ' Returns the next row after the last used row.
 ' Returns row 1 when the sheet is empty.
 Private Function GetNextRowAfterLastUsed(ByVal ws As Worksheet) As Long
@@ -61,10 +53,10 @@ Public Function AddSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    Set existing = ws.Columns(SECTION_NAME_COLUMN).Find(What:=sectionName, _
-                                                        LookIn:=xlValues, _
-                                                        LookAt:=xlWhole, _
-                                                        MatchCase:=False)
+    Set existing = ws.Columns(COL_SECTION_NAME).Find(What:=sectionName, _
+                                                     LookIn:=xlValues, _
+                                                     LookAt:=xlWhole, _
+                                                     MatchCase:=False)
 
     If Not existing Is Nothing Then
         errorMessage = "A section with this name already exists."
@@ -80,8 +72,8 @@ Public Function AddSection(ByVal ws As Worksheet, _
         ws.Rows(newRow).Insert Shift:=xlShiftDown
     End If
 
-    ws.Cells(newRow, SECTION_NAME_COLUMN).Value2 = sectionName
-    ws.Rows(newRow).Interior.ColorIndex = SECTION_BLUE_COLOR_INDEX
+    ws.Cells(newRow, COL_SECTION_NAME).Value2 = sectionName
+    ws.Rows(newRow).Interior.ColorIndex = COLOR_INDEX_SECTION_BLUE
 
     AddSection = True
 End Function
@@ -157,7 +149,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    For colIndex = SECTION_TOTAL_START_COLUMN To SECTION_TOTAL_END_COLUMN   ' Column M to AF
+    For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
         columnLetter = Split(ws.Cells(1, colIndex).Address(False, False), "1")(0)
         formulaText = "=SUM("
 
@@ -228,4 +220,3 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
 
     RemoveAssemblyFromSection = True
 End Function
-

@@ -13,14 +13,6 @@ Option Explicit
 ' =========================================================
 
 ' =========================================================
-' Worksheet structure constants
-' =========================================================
-Private Const LIBRARY_FIRST_DATA_ROW As Long = 3
-Private Const LIBRARY_NAME_COLUMN As Long = 2          ' Column B
-Private Const LIBRARY_COLOR_COLUMN As Long = 1         ' Column A
-Private Const TARGET_INSERT_COLUMN As Long = 2         ' Copy starts at column B
-
-' =========================================================
 ' Public API
 ' =========================================================
 
@@ -44,22 +36,22 @@ Public Function GetAssemblyDisplayList(ByVal wsLib As Worksheet, _
 
     lastRow = modUtils.GetLastUsedRow(wsLib)
     If lastRow = 0 Then
-        errorMessage = "'Assembly List' appears empty."
+        errorMessage = "'" & SHEET_ASSEMBLY_LIST & "' appears empty."
         GetAssemblyDisplayList = False
         Exit Function
     End If
 
-    If Not GetDomainBounds(wsLib, domain, LIBRARY_FIRST_DATA_ROW, lastRow, startRow, endRow, errorMessage) Then
+    If Not GetDomainBounds(wsLib, domain, FIRST_DATA_ROW, lastRow, startRow, endRow, errorMessage) Then
         GetAssemblyDisplayList = False
         Exit Function
     End If
 
     ' The library uses a green header row to identify each assembly block.
-    assemblyHeaderColor = wsLib.Cells(LIBRARY_FIRST_DATA_ROW, LIBRARY_COLOR_COLUMN).Interior.Color
+    assemblyHeaderColor = wsLib.Cells(FIRST_DATA_ROW, COL_LIBRARY_COLOR).Interior.Color
 
     For rowNumber = startRow To endRow
-        If wsLib.Cells(rowNumber, LIBRARY_COLOR_COLUMN).Interior.Color = assemblyHeaderColor Then
-            displayText = CStr(wsLib.Cells(rowNumber, LIBRARY_NAME_COLUMN).Value2)
+        If wsLib.Cells(rowNumber, COL_LIBRARY_COLOR).Interior.Color = assemblyHeaderColor Then
+            displayText = CStr(wsLib.Cells(rowNumber, COL_LIBRARY_NAME).Value2)
 
             If displayText <> "" Then
                 count = count + 1
@@ -70,7 +62,7 @@ Public Function GetAssemblyDisplayList(ByVal wsLib As Worksheet, _
     Next rowNumber
 
     If count = 0 Then
-        errorMessage = "No " & UCase$(domain) & " assembly items found in 'Assembly List'."
+        errorMessage = "No " & UCase$(domain) & " assembly items found in '" & SHEET_ASSEMBLY_LIST & "'."
         GetAssemblyDisplayList = False
         Exit Function
     End If
@@ -87,6 +79,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
                                             ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
     Dim navigator As clsSheetStructureNavigator
+    Dim sectionManager As clsSectionManager
 
     Dim sectionRow As Long
     Dim insertRow As Long
@@ -99,17 +92,19 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
     Dim domainEndRow As Long
 
     errorMessage = vbNullString
+
     Set navigator = New clsSheetStructureNavigator
-    Set wsLib = ThisWorkbook.Worksheets("Assembly List")
+    Set sectionManager = New clsSectionManager
+    Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
     lastRow = modUtils.GetLastUsedRow(wsLib)
     If lastRow = 0 Then
-        errorMessage = "'Assembly List' appears empty."
+        errorMessage = "'" & SHEET_ASSEMBLY_LIST & "' appears empty."
         InsertAssembliesIntoSection = False
         Exit Function
     End If
 
-    If Not GetDomainBounds(wsLib, domain, LIBRARY_FIRST_DATA_ROW, lastRow, domainStartRow, domainEndRow, errorMessage) Then
+    If Not GetDomainBounds(wsLib, domain, FIRST_DATA_ROW, lastRow, domainStartRow, domainEndRow, errorMessage) Then
         InsertAssembliesIntoSection = False
         Exit Function
     End If
@@ -142,15 +137,11 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
         End If
     Next itemIndex
 
-    Dim sectionManager As clsSectionManager
-
-    Set sectionManager = New clsSectionManager
-    
     If Not sectionManager.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
         InsertAssembliesIntoSection = False
         Exit Function
     End If
-    
+
     InsertAssembliesIntoSection = True
 End Function
 
@@ -192,33 +183,31 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
     ' restricted to the requested domain window.
     Set startCell = FindInColumnWithinRows( _
         wsLib, _
-        LIBRARY_NAME_COLUMN, _
+        COL_LIBRARY_NAME, _
         displayName, _
         domainStartRow, _
         domainEndRow)
 
     If startCell Is Nothing Then
-        errorMessage = "Assembly '" & displayName & "' not found in '" & wsLib.name & "' within the selected domain."
+        errorMessage = "Assembly '" & displayName & "' not found in '" & wsLib.Name & "' within the selected domain."
         CopyAssemblyBlockIntoTarget = False
         Exit Function
     End If
 
-    sourceStartRow = startCell.row
+    sourceStartRow = startCell.Row
 
-    ' Determine the last used column in the assembly header row.
-    lastCol = wsLib.Cells(sourceStartRow, wsLib.Columns.count).End(xlToLeft).Column
-    If lastCol < TARGET_INSERT_COLUMN Then
-        lastCol = TARGET_INSERT_COLUMN
+    lastCol = wsLib.Cells(sourceStartRow, wsLib.Columns.Count).End(xlToLeft).Column
+    If lastCol < COL_COPY_START Then
+        lastCol = COL_COPY_START
     End If
 
-    ' Determine the end of the source block without crossing the domain boundary.
     sourceEndRow = FindEndRowTrimTrailingEmpties(wsLib, sourceStartRow, lastCol, domainEndRow)
 
     rowsToInsert = sourceEndRow - sourceStartRow + 1
-    colsToCopy = lastCol - TARGET_INSERT_COLUMN + 1
+    colsToCopy = lastCol - COL_COPY_START + 1
 
     Set src = wsLib.Range( _
-        wsLib.Cells(sourceStartRow, TARGET_INSERT_COLUMN), _
+        wsLib.Cells(sourceStartRow, COL_COPY_START), _
         wsLib.Cells(sourceEndRow, lastCol))
 
     ' Insert destination rows first to preserve the worksheet structure.
@@ -231,8 +220,8 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
     insertedRows.ClearOutline
 
     Set dst = wsTarget.Range( _
-        wsTarget.Cells(insertRow, TARGET_INSERT_COLUMN), _
-        wsTarget.Cells(insertRow + rowsToInsert - 1, TARGET_INSERT_COLUMN + colsToCopy - 1))
+        wsTarget.Cells(insertRow, COL_COPY_START), _
+        wsTarget.Cells(insertRow + rowsToInsert - 1, COL_COPY_START + colsToCopy - 1))
 
     src.Copy Destination:=dst
     Application.CutCopyMode = False
@@ -269,11 +258,11 @@ Private Function GetDomainBounds(ByVal ws As Worksheet, _
     errorMessage = vbNullString
     domain = UCase$(domain)
 
-    meEndRow = FindMarkerRow(ws, "ME", "END", firstDataRow, lastRow)
-    ceStartRow = FindMarkerRow(ws, "CE", "START", firstDataRow, lastRow)
+    meEndRow = FindMarkerRow(ws, DOMAIN_ME, "END", firstDataRow, lastRow)
+    ceStartRow = FindMarkerRow(ws, DOMAIN_CE, "START", firstDataRow, lastRow)
 
     Select Case domain
-        Case "ME"
+        Case DOMAIN_ME
             startRow = firstDataRow
 
             If meEndRow > 0 Then
@@ -284,7 +273,7 @@ Private Function GetDomainBounds(ByVal ws As Worksheet, _
                 endRow = lastRow
             End If
 
-        Case "CE"
+        Case DOMAIN_CE
             If ceStartRow > 0 Then
                 startRow = ceStartRow + 1
             ElseIf meEndRow > 0 Then
@@ -296,7 +285,7 @@ Private Function GetDomainBounds(ByVal ws As Worksheet, _
             endRow = lastRow
 
         Case Else
-            errorMessage = "Unknown domain: " & domain & ". Use 'ME' or 'CE'."
+            errorMessage = "Unknown domain: " & domain & ". Use '" & DOMAIN_ME & "' or '" & DOMAIN_CE & "'."
             GetDomainBounds = False
             Exit Function
     End Select
@@ -305,7 +294,7 @@ Private Function GetDomainBounds(ByVal ws As Worksheet, _
     If endRow > lastRow Then endRow = lastRow
 
     If endRow < startRow Then
-        errorMessage = "Invalid domain bounds for " & domain & ". Check marker rows in 'Assembly List'."
+        errorMessage = "Invalid domain bounds for " & domain & ". Check marker rows in '" & SHEET_ASSEMBLY_LIST & "'."
         GetDomainBounds = False
         Exit Function
     End If
@@ -323,9 +312,10 @@ Private Function FindMarkerRow(ByVal ws As Worksheet, _
     Dim markerText As String
 
     For rowNumber = firstRow To lastRow
-        markerText = CStr(ws.Cells(rowNumber, LIBRARY_NAME_COLUMN).Value2)
+        markerText = CStr(ws.Cells(rowNumber, COL_LIBRARY_NAME).Value2)
+
         If Len(markerText) = 0 Then
-            markerText = CStr(ws.Cells(rowNumber, LIBRARY_COLOR_COLUMN).Value2)
+            markerText = CStr(ws.Cells(rowNumber, COL_LIBRARY_COLOR).Value2)
         End If
 
         If Len(markerText) > 0 Then
@@ -342,7 +332,6 @@ End Function
 ' Source block boundary helpers
 ' =========================================================
 
-' Finds the last meaningful row of the assembly block, trimming trailing empty rows.
 Private Function FindEndRowTrimTrailingEmpties(ByVal wsLib As Worksheet, _
                                                ByVal startRow As Long, _
                                                ByVal lastCol As Long, _
@@ -353,7 +342,7 @@ Private Function FindEndRowTrimTrailingEmpties(ByVal wsLib As Worksheet, _
     boundaryEnd = FindBoundaryEndRowUntilNextHeader(wsLib, startRow, domainEndRow)
 
     For rowNumber = boundaryEnd To startRow Step -1
-        If Not IsRowVisiblyEmpty(wsLib, rowNumber, TARGET_INSERT_COLUMN, lastCol) Then
+        If Not IsRowVisiblyEmpty(wsLib, rowNumber, COL_COPY_START, lastCol) Then
             FindEndRowTrimTrailingEmpties = rowNumber
             Exit Function
         End If
@@ -370,10 +359,10 @@ Private Function FindBoundaryEndRowUntilNextHeader(ByVal wsLib As Worksheet, _
     Dim rowNumber As Long
     Dim headerColor As Long
 
-    headerColor = wsLib.Cells(startRow, LIBRARY_COLOR_COLUMN).Interior.Color
+    headerColor = wsLib.Cells(startRow, COL_LIBRARY_COLOR).Interior.Color
 
     For rowNumber = startRow + 1 To domainEndRow
-        If wsLib.Cells(rowNumber, LIBRARY_COLOR_COLUMN).Interior.Color = headerColor Then
+        If wsLib.Cells(rowNumber, COL_LIBRARY_COLOR).Interior.Color = headerColor Then
             FindBoundaryEndRowUntilNextHeader = rowNumber - 1
             Exit Function
         End If
@@ -392,6 +381,7 @@ Private Function IsRowVisiblyEmpty(ByVal ws As Worksheet, _
 
     For colIndex = firstCol To lastCol
         cellValue = ws.Cells(rowIndex, colIndex).Value2
+
         If Len(CStr(cellValue)) > 0 Then
             IsRowVisiblyEmpty = False
             Exit Function
@@ -416,7 +406,11 @@ Private Function FindInColumnWithinRows(ByVal ws As Worksheet, _
 
     Set searchRange = ws.Range(ws.Cells(startRow, col), ws.Cells(endRow, col))
 
-    Set foundCell = searchRange.Find(What:=whatText, LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=False)
+    Set foundCell = searchRange.Find( _
+        What:=whatText, _
+        LookIn:=xlValues, _
+        LookAt:=xlWhole, _
+        MatchCase:=False)
 
     If Not foundCell Is Nothing Then
         Set FindInColumnWithinRows = foundCell
@@ -448,7 +442,6 @@ End Sub
 Private Sub FormatCoreItemRow(ByVal wsTarget As Worksheet, ByVal rowIndex As Long)
     With wsTarget.Rows(rowIndex).Interior
         .Pattern = xlSolid
-        .Color = RGB(191, 191, 191)
+        .Color = RGB(COLOR_ASSEMBLY_GRAY_R, COLOR_ASSEMBLY_GRAY_G, COLOR_ASSEMBLY_GRAY_B)
     End With
 End Sub
-

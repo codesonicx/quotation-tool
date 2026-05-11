@@ -20,19 +20,6 @@ Option Explicit
 '     * assembly name stored in column B
 ' =========================================================
 
-' =========================================================
-' Worksheet structure constants
-' =========================================================
-Private Const SECTION_NAME_COLUMN As Long = 1
-Private Const ASSEMBLY_NAME_COLUMN As Long = 2
-Private Const FIRST_DATA_ROW As Long = 3
-Private Const SECTION_BLUE_COLOR_INDEX As Long = 37
-Private Const ASSEMBLY_GRAY_COLOR_INDEX As Long = 15
-
-' =========================================================
-' Worksheet value helpers
-' =========================================================
-
 ' Returns normalized text from the specified worksheet cell.
 Private Function GetNormalizedCellText(ByVal ws As Worksheet, _
                                        ByVal rowNumber As Long, _
@@ -42,12 +29,12 @@ End Function
 
 ' Returns the section name stored at the given row.
 Private Function GetSectionNameAtRow(ByVal ws As Worksheet, ByVal rowNumber As Long) As String
-    GetSectionNameAtRow = GetNormalizedCellText(ws, rowNumber, SECTION_NAME_COLUMN)
+    GetSectionNameAtRow = GetNormalizedCellText(ws, rowNumber, COL_SECTION_NAME)
 End Function
 
 ' Returns the assembly name stored at the given row.
 Private Function GetAssemblyNameAtRow(ByVal ws As Worksheet, ByVal rowNumber As Long) As String
-    GetAssemblyNameAtRow = GetNormalizedCellText(ws, rowNumber, ASSEMBLY_NAME_COLUMN)
+    GetAssemblyNameAtRow = GetNormalizedCellText(ws, rowNumber, COL_ASSEMBLY_NAME)
 End Function
 
 ' =========================================================
@@ -57,14 +44,14 @@ End Function
 ' Returns True when the specified row is a valid section header row.
 Public Function IsSectionHeaderRow(ByVal ws As Worksheet, ByVal rowNumber As Long) As Boolean
     IsSectionHeaderRow = _
-        (ws.Rows(rowNumber).Interior.ColorIndex = SECTION_BLUE_COLOR_INDEX) _
+        (ws.Rows(rowNumber).Interior.ColorIndex = COLOR_INDEX_SECTION_BLUE) _
         And (GetSectionNameAtRow(ws, rowNumber) <> "")
 End Function
 
 ' Returns True when the specified row is a valid assembly header row.
 Public Function IsAssemblyHeaderRow(ByVal ws As Worksheet, ByVal rowNumber As Long) As Boolean
     IsAssemblyHeaderRow = _
-        (ws.Rows(rowNumber).Interior.ColorIndex = ASSEMBLY_GRAY_COLOR_INDEX) _
+        (ws.Rows(rowNumber).Interior.ColorIndex = COLOR_INDEX_ASSEMBLY_GRAY) _
         And (GetAssemblyNameAtRow(ws, rowNumber) <> "")
 End Function
 
@@ -150,7 +137,7 @@ Public Function FindSectionRow(ByVal ws As Worksheet, ByVal sectionName As Strin
         Exit Function
     End If
 
-    Set matchCell = ws.Columns(SECTION_NAME_COLUMN).Find(What:=sectionName, _
+    Set matchCell = ws.Columns(COL_SECTION_NAME).Find(What:=sectionName, _
                                                          LookIn:=xlValues, _
                                                          LookAt:=xlWhole, _
                                                          MatchCase:=False)
