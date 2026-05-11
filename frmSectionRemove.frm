@@ -91,7 +91,7 @@ Private Sub LoadSections()
     Set ws = modUtils.GetTargetWorksheet()
     Set sectionFinder = New clsSectionFinder
 
-    success = navigator.GetSectionNames(ws, sections, errorMessage)
+    success = sectionFinder.GetSectionNames(ws, sections, errorMessage)
 
     If Not success Then
         MsgBox errorMessage, vbExclamation, FORM_TITLE

@@ -119,7 +119,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
     For itemIndex = LBound(items) To UBound(items)
         ' Recalculate the section boundary before each insert,
         ' because previous inserts push the next section downward.
-        insertRow = navigator.FindNextSectionHeaderRow(wsTarget, sectionRow)
+        insertRow = sectionFinder.FindNextSectionHeaderRow(wsTarget, sectionRow)
 
         success = CopyAssemblyBlockIntoTarget( _
             wsLib, _
@@ -189,14 +189,14 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
         domainEndRow)
 
     If startCell Is Nothing Then
-        errorMessage = "Assembly '" & displayName & "' not found in '" & wsLib.Name & "' within the selected domain."
+        errorMessage = "Assembly '" & displayName & "' not found in '" & wsLib.name & "' within the selected domain."
         CopyAssemblyBlockIntoTarget = False
         Exit Function
     End If
 
     sourceStartRow = startCell.Row
 
-    lastCol = wsLib.Cells(sourceStartRow, wsLib.Columns.Count).End(xlToLeft).Column
+    lastCol = wsLib.Cells(sourceStartRow, wsLib.Columns.count).End(xlToLeft).Column
     If lastCol < COL_COPY_START Then
         lastCol = COL_COPY_START
     End If

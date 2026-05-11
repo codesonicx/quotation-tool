@@ -103,7 +103,7 @@ Private Sub LoadSections()
     Set ws = GetTargetWorksheet()
     Set sectionFinder = New clsSectionFinder
 
-    success = navigator.GetSectionNames(ws, sections, errorMessage)
+    success = sectionFinder.GetSectionNames(ws, sections, errorMessage)
 
     If Not success Then
         MsgBox errorMessage, vbExclamation, FORM_TITLE
@@ -131,7 +131,7 @@ Private Sub LoadAssembliesForSelectedSection()
     Set ws = GetTargetWorksheet()
     Set sectionFinder = New clsSectionFinder
 
-    success = navigator.GetAssembliesInSection( _
+    success = sectionFinder.GetAssembliesInSection( _
         ws, _
         GetSelectedSectionName(), _
         assemblies, _

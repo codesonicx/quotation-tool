@@ -166,7 +166,7 @@ Private Sub LoadSections()
     Set sectionFinder = New clsSectionFinder
     Me.cmbSection.Clear
 
-    success = navigator.GetSectionNames(ActiveSheet, sections, errorMessage)
+    success = sectionFinder.GetSectionNames(ActiveSheet, sections, errorMessage)
 
     If Not success Then
         MsgBox errorMessage, vbExclamation
@@ -191,7 +191,7 @@ Private Sub LoadAssembliesForSelectedSection()
     If Me.cmbSection.ListIndex = -1 Then Exit Sub
 
     Set sectionFinder = New clsSectionFinder
-    success = navigator.GetAssembliesInSection( _
+    success = sectionFinder.GetAssembliesInSection( _
         ActiveSheet, _
         Me.cmbSection.value, _
         assemblies, _

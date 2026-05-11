@@ -108,7 +108,7 @@ Public Function RemoveSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    nextSectionRow = navigator.FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = sectionFinder.FindNextSectionHeaderRow(ws, sectionRow)
 
     ' Delete from the section header row
     ' down to the row before the next section
@@ -143,7 +143,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    success = navigator.GetAssemblyHeaderRowsInSection(ws, sectionName, assemblyRows, errorMessage)
+    success = sectionFinder.GetAssemblyHeaderRowsInSection(ws, sectionName, assemblyRows, errorMessage)
     If Not success Then
         RecalculateSectionTotals = False
         Exit Function
@@ -196,14 +196,14 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
 
     Set sectionFinder = New clsSectionFinder
 
-    assemblyRow = navigator.FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
+    assemblyRow = sectionFinder.FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
     If assemblyRow = 0 Then
         errorMessage = "Assembly '" & assemblyName & "' was not found in section '" & sectionName & "'."
         RemoveAssemblyFromSection = False
         Exit Function
     End If
 
-    blockEndRow = navigator.FindAssemblyBlockEndRowInSection(ws, sectionName, assemblyName)
+    blockEndRow = sectionFinder.FindAssemblyBlockEndRowInSection(ws, sectionName, assemblyName)
     If blockEndRow = 0 Or blockEndRow < assemblyRow Then
         errorMessage = "Could not determine the full row range for assembly '" & assemblyName & "'."
         RemoveAssemblyFromSection = False
