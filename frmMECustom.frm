@@ -86,7 +86,7 @@ Private Sub InsertComponentWorkflow()
     If Not IsAssemblySelected Then Exit Sub
 
     sectionName = Me.cmbSection.value
-    assemblyName = Me.cmbAssembly.value
+    assemblyName = Me.lstAssembly.value
     Set customData = BuildCustomData()
 
     Set customItemService = New clsCustomItemService
@@ -160,14 +160,16 @@ Private Sub UpdateAssemblySelectorState()
 
     enableAssembly = (Me.cmbInsertMode.value = MODE_ADD_COMPONENT)
 
-    ' TODO: add color style change to improve UX
-    Me.cmbAssembly.Enabled = enableAssembly
+    Me.lstAssembly.Enabled = enableAssembly
+    Me.lstAssembly.Visible = enableAssembly
 
     If enableAssembly Then
         LoadAssembliesForSelectedSection
     Else
-        Me.cmbAssembly.Clear
+        Me.lstAssembly.Clear
     End If
+
+    UpdateInputFieldsForMode
 End Sub
 
 ' Refreshes the assembly list only when assembly selection is relevant.
@@ -175,7 +177,7 @@ Private Sub RefreshAssemblyList()
     If Me.cmbInsertMode.value = MODE_ADD_COMPONENT Then
         LoadAssembliesForSelectedSection
     Else
-        Me.cmbAssembly.Clear
+        Me.lstAssembly.Clear
     End If
 End Sub
 
@@ -214,7 +216,7 @@ Private Sub LoadAssembliesForSelectedSection()
     Dim assemblies() As String
     Dim i As Long
 
-    Me.cmbAssembly.Clear
+    Me.lstAssembly.Clear
 
     If Me.cmbSection.ListIndex = -1 Then Exit Sub
 
@@ -231,7 +233,7 @@ Private Sub LoadAssembliesForSelectedSection()
     End If
 
     For i = LBound(assemblies) To UBound(assemblies)
-        Me.cmbAssembly.AddItem assemblies(i)
+        Me.lstAssembly.AddItem assemblies(i)
     Next i
 End Sub
 
@@ -251,7 +253,7 @@ End Function
 
 ' Validates that an assembly has been selected.
 Private Function IsAssemblySelected() As Boolean
-    If Me.cmbAssembly.ListIndex = -1 Then
+    If Me.lstAssembly.ListIndex = -1 Then
         MsgBox "Please select an assembly.", vbExclamation
         IsAssemblySelected = False
     Else
@@ -282,3 +284,18 @@ Private Function BuildCustomData() As Collection
     Set BuildCustomData = holder
 End Function
 
+Private Sub UpdateInputFieldsForMode()
+    Dim isComponentMode As Boolean
+
+    isComponentMode = (Me.cmbInsertMode.Value = MODE_ADD_COMPONENT)
+
+    Me.txtDesignHours.Enabled = isComponentMode
+    Me.txtConstHours.Enabled = isComponentMode
+    Me.txtDebugHours.Enabled = isComponentMode
+    Me.txtInstallHours.Enabled = isComponentMode
+    Me.txtStartHours.Enabled = isComponentMode
+    Me.txtMatRate.Enabled = isComponentMode
+
+    Me.txtDesNum.Enabled = Not isComponentMode
+    Me.txtBuildNum.Enabled = Not isComponentMode
+End Sub
