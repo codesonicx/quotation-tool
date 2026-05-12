@@ -44,19 +44,95 @@ Public Const COLOR_ASSEMBLY_GRAY_B As Long = 191
 ' =========================================================
 ' Header labels
 ' =========================================================
+
+' Section / assembly columns
+Public Const HEADER_SECTION_NAME As String = "Section Name:"
+Public Const HEADER_ITEM As String = "Item"
+Public Const HEADER_ITEM_DES As String = "Item Des."
+Public Const HEADER_ITEM_BUILD As String = "Item Build"
+
+' Component columns
+Public Const HEADER_COMP_LIST As String = "Comp List"
 Public Const HEADER_COMPONENT As String = "Component"
 Public Const HEADER_COMP_DES As String = "Comp Des."
 Public Const HEADER_COMP_BUILD As String = "Comp Build"
 Public Const HEADER_SECT_DES As String = "Sect Des."
 Public Const HEADER_SECT_BUILD As String = "Sect Build"
-Public Const HEADER_DESIGN_HOURS As String = "design [h]"
-Public Const HEADER_CONSTRUCTION_HOURS As String = "construction [h]"
-Public Const HEADER_DEBUG_HOURS As String = "debug/tryout [h]"
-Public Const HEADER_INSTALLATION_HOURS As String = "installation [h]"
-Public Const HEADER_STARTUP_HOURS As String = "start up @ client [h]"
-Public Const HEADER_MATERIAL_RATE As String = "Material Rate [$/Build]"
-Public Const HEADER_COMP_LIST As String = "Comp List"
 
-Public Const HEADER_ITEM As String = "Item"
-Public Const HEADER_ITEM_DES As String = "Item" & vbLf & "Des."
-Public Const HEADER_ITEM_BUILD As String = "Item" & vbLf & "Build"
+' Markup columns
+Public Const HEADER_MATERIAL_MARKUP As String = "Material Markup [%]"
+Public Const HEADER_LABOR_MARKUP As String = "Labor Markup [%]"
+
+' Hours / rate columns
+Public Const HEADER_DESIGN_HOURS As String = "Design [h]"
+Public Const HEADER_CONSTRUCTION_HOURS As String = "Construction [h]"
+Public Const HEADER_DEBUG_HOURS As String = "Debug/Tryout [h]"
+Public Const HEADER_INSTALLATION_HOURS As String = "Installation [h]"
+Public Const HEADER_STARTUP_HOURS As String = "Start up @ Client [h]"
+Public Const HEADER_MATERIAL_RATE As String = "Material Rate [$/Build]"
+
+' Budgeted cost columns
+Public Const HEADER_BUDGETED_DESIGN_COST As String = "Budgeted Design Cost [$]"
+Public Const HEADER_BUDGETED_CONSTRUCTION_COST As String = "Budgeted Construction Cost [$]"
+Public Const HEADER_BUDGETED_DEBUG_COST As String = "Budgeted Debug/Tryout Cost [$]"
+Public Const HEADER_BUDGETED_INSTALLATION_COST As String = "Budgeted Installation Cost [$]"
+Public Const HEADER_BUDGETED_STARTUP_COST As String = "Budgeted Start up @ Client Cost [$]"
+Public Const HEADER_BUDGETED_MATERIAL_COST As String = "Budgeted Material Cost [$]"
+Public Const HEADER_BUDGETED_TOTAL As String = "Budgeted Total [$]"
+
+' Markup cost columns
+Public Const HEADER_DESIGN_COST_WITH_MARKUP As String = "Design Cost w/ Markup [$]"
+Public Const HEADER_CONSTRUCTION_COST_WITH_MARKUP As String = "Construction Cost w/ Markup [$]"
+Public Const HEADER_DEBUG_COST_WITH_MARKUP As String = "Debug/Tryout Cost w/ Markup [$]"
+Public Const HEADER_INSTALLATION_COST_WITH_MARKUP As String = "Installation Cost w/ Markup [$]"
+Public Const HEADER_STARTUP_COST_WITH_MARKUP As String = "Start up @ Client Cost w/ Markup [$]"
+Public Const HEADER_MATERIAL_COST_WITH_MARKUP As String = "Material Cost w/ Markup [$]"
+Public Const HEADER_TOTAL_WITH_MARKUP As String = "Total w/ Markup [$]"
+
+' Final percentage column
+Public Const HEADER_PERCENT As String = "%"
+
+' =========================================================
+' Fixed worksheet columns
+' =========================================================
+
+Public Const COL_ITEM As Long = 2
+Public Const COL_ITEM_DES As Long = 3
+Public Const COL_ITEM_BUILD As Long = 4
+
+Public Const COL_COMP_LIST As Long = 5
+Public Const COL_COMPONENT As Long = 6
+Public Const COL_COMP_DES As Long = 7
+Public Const COL_COMP_BUILD As Long = 8
+
+Public Const COL_SECT_DES As Long = 9
+Public Const COL_SECT_BUILD As Long = 10
+
+Public Const COL_MATERIAL_MARKUP As Long = 11
+Public Const COL_LABOR_MARKUP As Long = 12
+
+Public Const COL_DESIGN_HOURS As Long = 13
+Public Const COL_CONSTRUCTION_HOURS As Long = 14
+Public Const COL_DEBUG_HOURS As Long = 15
+Public Const COL_INSTALLATION_HOURS As Long = 16
+Public Const COL_STARTUP_HOURS As Long = 17
+
+Public Const COL_MATERIAL_RATE As Long = 18
+
+Public Const COL_BUDGET_DESIGN As Long = 19
+Public Const COL_BUDGET_CONSTRUCTION As Long = 20
+Public Const COL_BUDGET_DEBUG As Long = 21
+Public Const COL_BUDGET_INSTALLATION As Long = 22
+Public Const COL_BUDGET_STARTUP As Long = 23
+Public Const COL_BUDGET_MATERIAL As Long = 24
+Public Const COL_BUDGET_TOTAL As Long = 25
+
+Public Const COL_MARKUP_DESIGN As Long = 26
+Public Const COL_MARKUP_CONSTRUCTION As Long = 27
+Public Const COL_MARKUP_DEBUG As Long = 28
+Public Const COL_MARKUP_INSTALLATION As Long = 29
+Public Const COL_MARKUP_STARTUP As Long = 30
+Public Const COL_MARKUP_MATERIAL As Long = 31
+Public Const COL_MARKUP_TOTAL As Long = 32
+
+Public Const COL_PERCENT As Long = 33

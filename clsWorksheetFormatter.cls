@@ -49,3 +49,14 @@ Public Sub FormatCustomItemRow(ByVal targetRow As Range)
     targetRow.Interior.Pattern = xlNone
 
 End Sub
+
+Public Sub RefreshAssemblyChildGrouping(ByVal ws As Worksheet, _
+                                        ByVal firstChildRow As Long, _
+                                        ByVal lastChildRow As Long)
+
+    If lastChildRow < firstChildRow Then Exit Sub
+
+    ws.Rows(firstChildRow & ":" & lastChildRow).ClearOutline
+    ws.Rows(firstChildRow & ":" & lastChildRow).Group
+
+End Sub
