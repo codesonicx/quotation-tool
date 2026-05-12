@@ -4,8 +4,53 @@ Option Explicit
 ' clsCustomItemService
 '
 ' Purpose:
-' Inserts custom/manual components into an existing assembly.
+' Inserts custom/manual assemblies and components.
 ' =========================================================
+
+Public Function InsertCustomAssemblyIntoSection(ByVal wsTarget As Worksheet, _
+                                                ByVal sectionName As String, _
+                                                ByVal customData As Collection, _
+                                                ByRef errorMessage As String) As Boolean
+    Dim sectionFinder As clsSectionFinder
+    Dim sectionService As clsSectionService
+    Dim worksheetFormatter As clsWorksheetFormatter
+
+    Dim sectionRow As Long
+    Dim insertRow As Long
+    Dim insertedRow As Range
+
+    errorMessage = vbNullString
+
+    Set sectionFinder = New clsSectionFinder
+    Set sectionService = New clsSectionService
+    Set worksheetFormatter = New clsWorksheetFormatter
+
+    sectionRow = sectionFinder.FindSectionHeaderRow(wsTarget, sectionName)
+    If sectionRow = 0 Then
+        errorMessage = "Section '" & sectionName & "' was not found."
+        InsertCustomAssemblyIntoSection = False
+        Exit Function
+    End If
+
+    insertRow = sectionFinder.FindNextSectionHeaderRowAfter(wsTarget, sectionRow)
+
+    wsTarget.Rows(insertRow).Insert Shift:=xlShiftDown
+    Set insertedRow = wsTarget.Rows(insertRow)
+
+    worksheetFormatter.FormatAssemblyHeaderRow wsTarget, insertRow
+
+    If Not PopulateInsertedCustomAssemblyRow(wsTarget, insertRow, customData, errorMessage) Then
+        InsertCustomAssemblyIntoSection = False
+        Exit Function
+    End If
+
+    If Not sectionService.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
+        InsertCustomAssemblyIntoSection = False
+        Exit Function
+    End If
+
+    InsertCustomAssemblyIntoSection = True
+End Function
 
 Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByVal sectionName As String, _
@@ -90,6 +135,43 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     End If
 
     InsertCustomComponentIntoAssembly = True
+End Function
+
+Private Function PopulateInsertedCustomAssemblyRow(ByVal wsTarget As Worksheet, _
+                                                   ByVal targetRow As Long, _
+                                                   ByVal customData As Collection, _
+                                                   ByRef errorMessage As String) As Boolean
+    Dim headerFinder As clsHeaderFinder
+
+    Dim itemCol As Long
+    Dim itemDesCol As Long
+    Dim itemBuildCol As Long
+
+    errorMessage = vbNullString
+
+    Set headerFinder = New clsHeaderFinder
+
+    itemCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_ITEM)
+    itemDesCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_ITEM_DES)
+    itemBuildCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_ITEM_BUILD)
+
+    If itemCol = 0 Then
+        errorMessage = "Column '" & HEADER_ITEM & "' was not found in the target sheet."
+        PopulateInsertedCustomAssemblyRow = False
+        Exit Function
+    End If
+
+    wsTarget.Cells(targetRow, itemCol).Value = CStr(customData("name"))
+
+    If itemDesCol > 0 Then
+        wsTarget.Cells(targetRow, itemDesCol).Value = CLng(customData("desNum"))
+    End If
+
+    If itemBuildCol > 0 Then
+        wsTarget.Cells(targetRow, itemBuildCol).Value = CLng(customData("buildNum"))
+    End If
+
+    PopulateInsertedCustomAssemblyRow = True
 End Function
 
 Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _

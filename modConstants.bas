@@ -56,3 +56,7 @@ Public Const HEADER_INSTALLATION_HOURS As String = "installation [h]"
 Public Const HEADER_STARTUP_HOURS As String = "start up @ client [h]"
 Public Const HEADER_MATERIAL_RATE As String = "Material Rate [$/Build]"
 Public Const HEADER_COMP_LIST As String = "Comp List"
+
+Public Const HEADER_ITEM As String = "Item"
+Public Const HEADER_ITEM_DES As String = "Item" & vbLf & "Des."
+Public Const HEADER_ITEM_BUILD As String = "Item" & vbLf & "Build"

@@ -57,7 +57,7 @@ End Sub
 Private Sub HandleAddAction()
     Dim modeText As String
 
-    modeText = Me.cmbInsertMode.value
+    modeText = Me.cmbInsertMode.Value
 
     If Not IsSectionSelected Then Exit Sub
 
@@ -66,7 +66,7 @@ Private Sub HandleAddAction()
             InsertComponentWorkflow
 
         Case MODE_ADD_ASSEMBLY
-            MsgBox "Mode '" & modeText & "' belongs to Milestone B and is not implemented yet.", vbInformation
+            InsertCustomAssemblyWorkflow
 
         Case Else
             MsgBox "Unknown insert mode selected.", vbExclamation
@@ -100,6 +100,34 @@ Private Sub InsertComponentWorkflow()
 
     If success Then
         MsgBox "Custom component inserted successfully.", vbInformation
+        Unload Me
+    Else
+        MsgBox errorMessage, vbExclamation
+    End If
+End Sub
+
+' Handles the full process for inserting a new custom assembly.
+Private Sub InsertCustomAssemblyWorkflow()
+    Dim sectionName As String
+    Dim customData As Collection
+
+    Dim customItemService As clsCustomItemService
+    Dim success As Boolean
+    Dim errorMessage As String
+
+    sectionName = Me.cmbSection.Value
+    Set customData = BuildCustomData()
+
+    Set customItemService = New clsCustomItemService
+
+    success = customItemService.InsertCustomAssemblyIntoSection( _
+        ActiveSheet, _
+        sectionName, _
+        customData, _
+        errorMessage)
+
+    If success Then
+        MsgBox "Custom assembly inserted successfully.", vbInformation
         Unload Me
     Else
         MsgBox errorMessage, vbExclamation
