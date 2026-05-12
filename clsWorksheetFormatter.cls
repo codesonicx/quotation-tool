@@ -41,3 +41,11 @@ Public Sub GroupAssemblyChildRows(ByVal ws As Worksheet, _
     End If
 
 End Sub
+
+Public Sub FormatCustomItemRow(ByVal targetRow As Range)
+
+    targetRow.ClearFormats
+    targetRow.ClearOutline
+    targetRow.Interior.Pattern = xlNone
+
+End Sub

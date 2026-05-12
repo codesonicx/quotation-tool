@@ -16,6 +16,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     Dim wsLib As Worksheet
     Dim assemblyFinder As clsAssemblyFinder
     Dim sectionService As clsSectionService
+    Dim worksheetFormatter As clsWorksheetFormatter
 
     Dim insertRow As Long
     Dim templateRow As Long
@@ -29,6 +30,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
 
     Set assemblyFinder = New clsAssemblyFinder
     Set sectionService = New clsSectionService
+    Set worksheetFormatter = New clsWorksheetFormatter
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
     ' Find where the custom component should be inserted in the target sheet.
@@ -61,8 +63,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     wsTarget.Rows(insertRow).Insert Shift:=xlShiftDown
     Set insertedRow = wsTarget.Rows(insertRow)
 
-    insertedRow.ClearFormats
-    insertedRow.ClearOutline
+    worksheetFormatter.FormatCustomItemRow insertedRow
 
     ' Copy the template row into the inserted target row.
     Set dst = wsTarget.Range( _
@@ -71,7 +72,6 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
 
     src.Copy Destination:=dst
     Application.CutCopyMode = False
-    insertedRow.Interior.Pattern = xlNone
 
     ' Fill values and formulas into the inserted row.
     If Not PopulateInsertedCustomRow(wsTarget, insertRow, customData, errorMessage) Then
