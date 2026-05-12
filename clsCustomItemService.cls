@@ -97,6 +97,7 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
                                            ByVal customData As Collection, _
                                            ByRef errorMessage As String) As Boolean
     Dim formulaService As clsFormulaService
+    Dim headerFinder As clsHeaderFinder
 
     Dim compCol As Long
     Dim compDesCol As Long
@@ -114,19 +115,20 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     errorMessage = vbNullString
 
     Set formulaService = New clsFormulaService
+    Set headerFinder = New clsHeaderFinder
 
-    compCol = FindHeaderColumn(wsTarget, HEADER_COMPONENT)
-    compDesCol = FindHeaderColumn(wsTarget, HEADER_COMP_DES)
-    compBuildCol = FindHeaderColumn(wsTarget, HEADER_COMP_BUILD)
-    sectDesCol = FindHeaderColumn(wsTarget, HEADER_SECT_DES)
-    sectBuildCol = FindHeaderColumn(wsTarget, HEADER_SECT_BUILD)
-    designCol = FindHeaderColumn(wsTarget, HEADER_DESIGN_HOURS)
-    constrCol = FindHeaderColumn(wsTarget, HEADER_CONSTRUCTION_HOURS)
-    debugCol = FindHeaderColumn(wsTarget, HEADER_DEBUG_HOURS)
-    installCol = FindHeaderColumn(wsTarget, HEADER_INSTALLATION_HOURS)
-    startCol = FindHeaderColumn(wsTarget, HEADER_STARTUP_HOURS)
-    matCol = FindHeaderColumn(wsTarget, HEADER_MATERIAL_RATE)
-    compListCol = FindHeaderColumn(wsTarget, HEADER_COMP_LIST)
+    compCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_COMPONENT)
+    compDesCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_COMP_DES)
+    compBuildCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_COMP_BUILD)
+    sectDesCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_SECT_DES)
+    sectBuildCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_SECT_BUILD)
+    designCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_DESIGN_HOURS)
+    constrCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_CONSTRUCTION_HOURS)
+    debugCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_DEBUG_HOURS)
+    installCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_INSTALLATION_HOURS)
+    startCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_STARTUP_HOURS)
+    matCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_MATERIAL_RATE)
+    compListCol = headerFinder.FindHeaderColumn(wsTarget, HEADER_COMP_LIST)
 
     If compCol = 0 Then
         errorMessage = "Column '" & HEADER_COMPONENT & "' was not found in the target sheet."
@@ -159,20 +161,4 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     End If
 
     PopulateInsertedCustomRow = True
-End Function
-
-Private Function FindHeaderColumn(ByVal ws As Worksheet, ByVal headerText As String) As Long
-    Dim foundCell As Range
-
-    Set foundCell = ws.Rows(1).Find( _
-        What:=headerText, _
-        LookIn:=xlValues, _
-        LookAt:=xlWhole, _
-        MatchCase:=False)
-
-    If foundCell Is Nothing Then
-        FindHeaderColumn = 0
-    Else
-        FindHeaderColumn = foundCell.Column
-    End If
 End Function
