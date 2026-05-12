@@ -47,7 +47,7 @@ End Sub
 ' Handles the full remove-assembly workflow.
 Private Sub HandleRemoveAction()
     Dim ws As Worksheet
-    Dim manager As clsSectionManager
+    Dim sectionService As clsSectionService
     Dim sectionName As String
     Dim assemblyName As String
     Dim errorMessage As String
@@ -62,9 +62,9 @@ Private Sub HandleRemoveAction()
     If Not ConfirmAssemblyRemoval(sectionName, assemblyName) Then Exit Sub
 
     Set ws = GetTargetWorksheet()
-    Set manager = New clsSectionManager
+    Set sectionService = New clsSectionService
 
-    success = manager.RemoveAssemblyFromSection(ws, sectionName, assemblyName, errorMessage)
+    success = sectionService.RemoveAssemblyFromSection(ws, sectionName, assemblyName, errorMessage)
 
     If success Then
         MsgBox "Assembly removed successfully.", vbInformation, FORM_TITLE

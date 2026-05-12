@@ -79,7 +79,7 @@ Private Sub InsertComponentWorkflow()
     Dim assemblyName As String
     Dim customData As Collection
 
-    Dim manager As clsCustomItemsManager
+    Dim customItemService As clsCustomItemService
     Dim success As Boolean
     Dim errorMessage As String
 
@@ -89,9 +89,9 @@ Private Sub InsertComponentWorkflow()
     assemblyName = Me.cmbAssembly.value
     Set customData = BuildCustomData()
 
-    Set manager = New clsCustomItemsManager
+    Set customItemService = New clsCustomItemService
 
-    success = manager.InsertCustomComponentIntoAssembly( _
+    success = customItemService.InsertCustomComponentIntoAssembly( _
         ActiveSheet, _
         sectionName, _
         assemblyName, _

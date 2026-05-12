@@ -1,7 +1,7 @@
 Option Explicit
 
 ' =========================================================
-' clsSectionManager
+' clsSectionService
 '
 ' Purpose:
 ' Manages changes to section data in the worksheet.

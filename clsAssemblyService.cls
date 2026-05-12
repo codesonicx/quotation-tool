@@ -79,7 +79,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
                                             ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
     Dim sectionFinder As clsSectionFinder
-    Dim sectionManager As clsSectionManager
+    Dim sectionService As clsSectionService
 
     Dim sectionRow As Long
     Dim insertRow As Long
@@ -94,7 +94,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
     errorMessage = vbNullString
 
     Set sectionFinder = New clsSectionFinder
-    Set sectionManager = New clsSectionManager
+    Set sectionService = New clsSectionService
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
     lastRow = modUtils.GetLastUsedRow(wsLib)
@@ -137,7 +137,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
         End If
     Next itemIndex
 
-    If Not sectionManager.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
+    If Not sectionService.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
         InsertAssembliesIntoSection = False
         Exit Function
     End If

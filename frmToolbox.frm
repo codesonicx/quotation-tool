@@ -11,13 +11,13 @@ End Sub
 Private Sub btnNewSheet_Click()
 
     Dim sheetName As String
-    Dim manager As New clsSheetManager
+    Dim workbookSheetService As New clsWorkbookSheetService
     Dim success As Boolean
     Dim errorMessage As String
 
     sheetName = InputBox("Name of new sheet:", "Inserting New Sheet")
     
-    success = manager.CreateNewSheet(sheetName, errorMessage)
+    success = workbookSheetService.CreateNewSheet(sheetName, errorMessage)
     
     If Not success Then
         MsgBox errorMessage
@@ -28,13 +28,13 @@ End Sub
 Private Sub btnNewSection_Click()
 
     Dim sectionName As String
-    Dim manager As New clsSectionManager
+    Dim sectionService As New clsSectionService
     Dim success As Boolean
     Dim errorMessage As String
 
     sectionName = InputBox("Section Name:", "Add New Section")
 
-    success = manager.AddSection(ActiveSheet, sectionName, errorMessage)
+    success = sectionService.AddSection(ActiveSheet, sectionName, errorMessage)
 
     If Not success Then
         MsgBox errorMessage, vbExclamation

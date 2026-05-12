@@ -1,7 +1,7 @@
 Option Explicit
 
 ' =========================================================
-' clsCustomItemsManager
+' clsCustomItemsService
 '
 ' Purpose:
 ' Manages insertion of custom/manual components into an
@@ -15,7 +15,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
     Dim sectionFinder As clsSectionFinder
-    Dim sectionManager As clsSectionManager
+    Dim sectionService As clsSectionService
 
     Dim insertRow As Long
     Dim templateRow As Long
@@ -28,7 +28,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     errorMessage = vbNullString
 
     Set sectionFinder = New clsSectionFinder
-    Set sectionManager = New clsSectionManager
+    Set sectionService = New clsSectionService
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
     ' Find where the custom component should be inserted in the target sheet.
@@ -79,7 +79,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
         Exit Function
     End If
 
-    If Not sectionManager.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
+    If Not sectionService.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If

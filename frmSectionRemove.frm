@@ -39,7 +39,7 @@ End Sub
 ' Handles the full remove-section workflow.
 Private Sub HandleRemoveAction()
     Dim ws As Worksheet
-    Dim manager As clsSectionManager
+    Dim sectionService As clsSectionService
     Dim selectedSection As String
     Dim errorMessage As String
     Dim success As Boolean
@@ -51,9 +51,9 @@ Private Sub HandleRemoveAction()
     If Not ConfirmSectionRemoval(selectedSection) Then Exit Sub
 
     Set ws = GetTargetWorksheet()
-    Set manager = New clsSectionManager
+    Set sectionService = New clsSectionService
 
-    success = manager.RemoveSection(ws, selectedSection, errorMessage)
+    success = sectionService.RemoveSection(ws, selectedSection, errorMessage)
 
     If success Then
         MsgBox "Section removed successfully.", vbInformation, FORM_TITLE
