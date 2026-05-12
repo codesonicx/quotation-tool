@@ -28,13 +28,17 @@ Private Sub WriteComponentQuantities(ByVal ws As Worksheet, _
 
     ws.Cells(rowIndex, COL_SECT_DES).Formula = "=" & _
         ws.Cells(rowIndex, COL_COMP_DES).Address(False, False) & _
-        "*" & _
-        ws.Cells(rowIndex - 1, COL_ITEM_DES).Address(False, False)
+        "*OFFSET(" & _
+        ws.Cells(rowIndex, COL_SECT_DES).Address(False, False) & _
+        ",-" & ws.Cells(rowIndex, COL_COMP_LIST).Address(False, False) & _
+        ",-6)"
 
     ws.Cells(rowIndex, COL_SECT_BUILD).Formula = "=" & _
         ws.Cells(rowIndex, COL_COMP_BUILD).Address(False, False) & _
-        "*" & _
-        ws.Cells(rowIndex - 1, COL_ITEM_BUILD).Address(False, False)
+        "*OFFSET(" & _
+        ws.Cells(rowIndex, COL_SECT_BUILD).Address(False, False) & _
+        ",-" & ws.Cells(rowIndex, COL_COMP_LIST).Address(False, False) & _
+        ",-6)"
 
 End Sub
 
