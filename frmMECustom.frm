@@ -3,7 +3,7 @@ Option Explicit
 ' =========================================================
 ' Form configuration constants
 ' =========================================================
-Private Const FORM_HEIGHT As Long = 500
+Private Const FORM_HEIGHT As Long = 550
 Private Const FORM_WIDTH As Long = 310
 
 ' Insert mode labels
@@ -161,12 +161,18 @@ Private Sub UpdateAssemblySelectorState()
     enableAssembly = (Me.cmbInsertMode.value = MODE_ADD_COMPONENT)
 
     Me.lstAssembly.Enabled = enableAssembly
-    Me.lstAssembly.Visible = enableAssembly
 
     If enableAssembly Then
+        Me.lstAssembly.BackColor = RGB(255, 255, 255)
+        Me.lstAssembly.ForeColor = RGB(0, 0, 0)
+
         LoadAssembliesForSelectedSection
     Else
         Me.lstAssembly.Clear
+        Me.lstAssembly.AddItem "Not required for new assembly"
+
+        Me.lstAssembly.BackColor = RGB(230, 230, 230)
+        Me.lstAssembly.ForeColor = RGB(120, 120, 120)
     End If
 
     UpdateInputFieldsForMode
@@ -174,10 +180,11 @@ End Sub
 
 ' Refreshes the assembly list only when assembly selection is relevant.
 Private Sub RefreshAssemblyList()
-    If Me.cmbInsertMode.value = MODE_ADD_COMPONENT Then
+    If Me.cmbInsertMode.Value = MODE_ADD_COMPONENT Then
         LoadAssembliesForSelectedSection
     Else
         Me.lstAssembly.Clear
+        Me.lstAssembly.AddItem "Not required for new assembly"
     End If
 End Sub
 
@@ -206,6 +213,10 @@ Private Sub LoadSections()
     For i = LBound(sections) To UBound(sections)
         Me.cmbSection.AddItem sections(i)
     Next i
+
+    If Me.cmbSection.ListCount > 0 Then
+        Me.cmbSection.ListIndex = 0
+    End If
 End Sub
 
 ' Loads assemblies for the currently selected section.
