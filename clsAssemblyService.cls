@@ -157,9 +157,10 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
 
     Set insertedRows = wsTarget.Rows(insertRow & ":" & (insertRow + rowsToInsert - 1))
 
-    ' Remove inherited formatting and outline/group settings.
-    insertedRows.ClearFormats
-    insertedRows.ClearOutline
+    Dim worksheetFormatter As clsWorksheetFormatter
+    Set worksheetFormatter = New clsWorksheetFormatter
+
+    worksheetFormatter.ResetInsertedRows insertedRows
 
     Set dst = wsTarget.Range( _
         wsTarget.Cells(insertRow, COL_COPY_START), _
@@ -168,22 +169,16 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
     src.Copy Destination:=dst
     Application.CutCopyMode = False
 
-    FormatCoreItemRow wsTarget, insertRow
+    worksheetFormatter.FormatAssemblyHeaderRow wsTarget, insertRow
 
     ' Group only the child rows below the assembly header.
     firstChildRow = insertRow + 1
     lastChildRow = insertRow + rowsToInsert - 1
 
-    If lastChildRow >= firstChildRow Then
-        wsTarget.Rows(firstChildRow & ":" & lastChildRow).Group
-    End If
+    worksheetFormatter.GroupAssemblyChildRows _
+        wsTarget, _
+        firstChildRow, _
+        lastChildRow
 
     CopyAssemblyBlockIntoTarget = True
 End Function
-
-Private Sub FormatCoreItemRow(ByVal wsTarget As Worksheet, ByVal rowIndex As Long)
-    With wsTarget.Rows(rowIndex).Interior
-        .Pattern = xlSolid
-        .Color = RGB(COLOR_ASSEMBLY_GRAY_R, COLOR_ASSEMBLY_GRAY_G, COLOR_ASSEMBLY_GRAY_B)
-    End With
-End Sub
