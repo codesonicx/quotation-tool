@@ -242,7 +242,7 @@ End Function
 ' Returns the row where a new custom component should be inserted:
 ' - before the next assembly header inside the same section
 ' - or before the next section header if there is no next assembly
-Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
+Public Function FindCustomComponentInsertRow(ByVal ws As Worksheet, _
                                                 ByVal sectionName As String, _
                                                 ByVal assemblyName As String) As Long
     Dim sectionRow As Long
@@ -252,13 +252,13 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
 
     sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
-        FindInsertRowForCustomComponent = 0
+        FindCustomComponentInsertRow = 0
         Exit Function
     End If
 
     assemblyHeaderRow = FindAssemblyHeaderRow(ws, sectionName, assemblyName)
     If assemblyHeaderRow = 0 Then
-        FindInsertRowForCustomComponent = 0
+        FindCustomComponentInsertRow = 0
         Exit Function
     End If
 
@@ -266,12 +266,12 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
 
     For rowNumber = assemblyHeaderRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
-            FindInsertRowForCustomComponent = rowNumber
+            FindCustomComponentInsertRow = rowNumber
             Exit Function
         End If
     Next rowNumber
 
-    FindInsertRowForCustomComponent = nextSectionRow
+    FindCustomComponentInsertRow = nextSectionRow
 End Function
 
 ' Returns the row numbers of all assembly header rows inside the specified section.
