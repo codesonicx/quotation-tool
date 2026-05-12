@@ -44,3 +44,30 @@ Public Sub WriteComponentListNumber(ByVal wsTarget As Worksheet, _
     End If
 
 End Sub
+
+Public Sub WriteSectionTotalFormulas(ByVal ws As Worksheet, _
+                                     ByVal sectionRow As Long, _
+                                     ByRef assemblyRows() As Long)
+
+    Dim colIndex As Long
+    Dim i As Long
+    Dim formulaText As String
+    Dim columnLetter As String
+
+    For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
+        columnLetter = Split(ws.Cells(1, colIndex).Address(False, False), "1")(0)
+        formulaText = "=SUM("
+
+        For i = LBound(assemblyRows) To UBound(assemblyRows)
+            If i > LBound(assemblyRows) Then
+                formulaText = formulaText & ","
+            End If
+
+            formulaText = formulaText & columnLetter & assemblyRows(i)
+        Next i
+
+        formulaText = formulaText & ")"
+        ws.Cells(sectionRow, colIndex).Formula = formulaText
+    Next colIndex
+
+End Sub

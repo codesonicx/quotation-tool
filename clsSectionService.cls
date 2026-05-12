@@ -4,15 +4,13 @@ Option Explicit
 ' clsSectionService
 '
 ' Purpose:
-' Manages changes to section data in the worksheet.
+' Manages section-level worksheet changes.
 '
-' Current responsibilities:
-' - add section
-' - remove section
-' - recalculate section totals
-'
-' Future candidates:
-' - rename section
+' Responsibilities:
+' - add sections
+' - remove sections
+' - refresh section totals
+' - remove assemblies from sections
 ' =========================================================
 
 ' Returns the next row after the last used row.
@@ -29,15 +27,6 @@ Private Function GetNextRowAfterLastUsed(ByVal ws As Worksheet) As Long
     End If
 End Function
 
-' =========================================================
-' Public API
-' =========================================================
-
-' Adds a new section at the bottom of the used worksheet area.
-'
-' A section row is represented by:
-' - section name in column A
-' - full row colored with the section header color
 Public Function AddSection(ByVal ws As Worksheet, _
                            ByVal sectionName As String, _
                            ByRef errorMessage As String) As Boolean
@@ -53,10 +42,11 @@ Public Function AddSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    Set existing = ws.Columns(COL_SECTION_NAME).Find(What:=sectionName, _
-                                                     LookIn:=xlValues, _
-                                                     LookAt:=xlWhole, _
-                                                     MatchCase:=False)
+    Set existing = ws.Columns(COL_SECTION_NAME).Find( _
+        What:=sectionName, _
+        LookIn:=xlValues, _
+        LookAt:=xlWhole, _
+        MatchCase:=False)
 
     If Not existing Is Nothing Then
         errorMessage = "A section with this name already exists."
@@ -77,11 +67,6 @@ Public Function AddSection(ByVal ws As Worksheet, _
 
     AddSection = True
 End Function
-
-' Removes the specified section and all rows that belong to it.
-'
-' The deleted range starts at the section header row and continues
-' through the row immediately before the next section header.
 
 Public Function RemoveSection(ByVal ws As Worksheet, _
                               ByVal sectionName As String, _
@@ -124,19 +109,16 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
                                          ByRef errorMessage As String) As Boolean
     Dim sectionFinder As clsSectionFinder
     Dim assemblyFinder As clsAssemblyFinder
+    Dim formulaService As clsFormulaService
+
     Dim assemblyRows() As Long
-
     Dim sectionRow As Long
-    Dim success As Boolean
-
-    Dim colIndex As Long
-    Dim i As Long
-    Dim formulaText As String
-    Dim columnLetter As String
 
     errorMessage = vbNullString
+
     Set sectionFinder = New clsSectionFinder
     Set assemblyFinder = New clsAssemblyFinder
+    Set formulaService = New clsFormulaService
 
     sectionRow = sectionFinder.FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
@@ -145,33 +127,16 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    success = assemblyFinder.GetAssemblyHeaderRows(ws, sectionName, assemblyRows, errorMessage)
-    If Not success Then
+    If Not assemblyFinder.GetAssemblyHeaderRows(ws, sectionName, assemblyRows, errorMessage) Then
         RecalculateSectionTotals = False
         Exit Function
     End If
 
-    For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
-        columnLetter = Split(ws.Cells(1, colIndex).Address(False, False), "1")(0)
-        formulaText = "=SUM("
-
-        For i = LBound(assemblyRows) To UBound(assemblyRows)
-            If i > LBound(assemblyRows) Then
-                formulaText = formulaText & ","
-            End If
-
-            formulaText = formulaText & columnLetter & assemblyRows(i)
-        Next i
-        
-        formulaText = formulaText & ")"
-        ws.Cells(sectionRow, colIndex).Formula = formulaText
-    Next colIndex
+    formulaService.WriteSectionTotalFormulas ws, sectionRow, assemblyRows
 
     RecalculateSectionTotals = True
 End Function
 
-' Removes the specified assembly and all child rows that belong to it.
-' After deletion, the section totals are recalculated.
 Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
                                           ByVal sectionName As String, _
                                           ByVal assemblyName As String, _
