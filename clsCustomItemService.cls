@@ -13,7 +13,9 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByVal customData As Collection, _
                                                   ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
+
     Dim assemblyFinder As clsAssemblyFinder
+    Dim libraryFinder As clsLibraryFinder
     Dim sectionService As clsSectionService
     Dim worksheetFormatter As clsWorksheetFormatter
 
@@ -28,28 +30,33 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     errorMessage = vbNullString
 
     Set assemblyFinder = New clsAssemblyFinder
+    Set libraryFinder = New clsLibraryFinder
     Set sectionService = New clsSectionService
     Set worksheetFormatter = New clsWorksheetFormatter
+
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
-    ' Find where the custom component should be inserted in the target sheet.
-    insertRow = assemblyFinder.FindCustomComponentInsertRow(wsTarget, sectionName, assemblyName)
+    insertRow = assemblyFinder.FindCustomComponentInsertRow( _
+        wsTarget, _
+        sectionName, _
+        assemblyName)
+
     If insertRow = 0 Then
         errorMessage = "Could not determine insert row for assembly '" & assemblyName & "' in section '" & sectionName & "'."
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If
 
-    ' Find the template row used as the base for manual-entry components.
-    templateRow = FindExactTextInColumn(wsLib, COL_LIBRARY_NAME, TEMPLATE_ME_MANUAL_ENTRY)
+    templateRow = libraryFinder.FindManualEntryTemplateRow(wsLib, errorMessage)
+
     If templateRow = 0 Then
-        errorMessage = "Template row '" & TEMPLATE_ME_MANUAL_ENTRY & "' was not found in '" & SHEET_ASSEMBLY_LIST & "'."
         InsertCustomComponentIntoAssembly = False
         Exit Function
     End If
 
     ' Determine the copy range on the template row from column B to the last used column.
     lastCol = wsLib.Cells(templateRow, wsLib.Columns.Count).End(xlToLeft).Column
+
     If lastCol < COL_COPY_START Then
         lastCol = COL_COPY_START
     End If
@@ -152,24 +159,6 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     End If
 
     PopulateInsertedCustomRow = True
-End Function
-
-Private Function FindExactTextInColumn(ByVal ws As Worksheet, _
-                                       ByVal colIndex As Long, _
-                                       ByVal findText As String) As Long
-    Dim foundCell As Range
-
-    Set foundCell = ws.Columns(colIndex).Find( _
-        What:=findText, _
-        LookIn:=xlValues, _
-        LookAt:=xlWhole, _
-        MatchCase:=False)
-
-    If foundCell Is Nothing Then
-        FindExactTextInColumn = 0
-    Else
-        FindExactTextInColumn = foundCell.Row
-    End If
 End Function
 
 Private Function FindHeaderColumn(ByVal ws As Worksheet, ByVal headerText As String) As Long

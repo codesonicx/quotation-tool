@@ -165,6 +165,26 @@ Public Function FindAssemblySourceBlock(ByVal wsLib As Worksheet, _
     FindAssemblySourceBlock = True
 End Function
 
+Public Function FindManualEntryTemplateRow(ByVal wsLib As Worksheet, _
+                                           ByRef errorMessage As String) As Long
+    Dim foundCell As Range
+
+    errorMessage = vbNullString
+
+    Set foundCell = wsLib.Columns(COL_LIBRARY_NAME).Find( _
+        What:=TEMPLATE_ME_MANUAL_ENTRY, _
+        LookIn:=xlValues, _
+        LookAt:=xlWhole, _
+        MatchCase:=False)
+
+    If foundCell Is Nothing Then
+        errorMessage = "Template row '" & TEMPLATE_ME_MANUAL_ENTRY & "' was not found in '" & SHEET_ASSEMBLY_LIST & "'."
+        FindManualEntryTemplateRow = 0
+    Else
+        FindManualEntryTemplateRow = foundCell.Row
+    End If
+End Function
+
 Private Function FindMarkerRow(ByVal ws As Worksheet, _
                                ByVal token1 As String, _
                                ByVal token2 As String, _
