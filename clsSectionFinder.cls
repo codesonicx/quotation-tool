@@ -204,7 +204,7 @@ End Function
 
 ' Finds the requested assembly header row, but only inside the specified section.
 ' Returns 0 when the section or assembly is not found.
-Public Function FindAssemblyHeaderRowInSection(ByVal ws As Worksheet, _
+Public Function FindAssemblyHeaderRow(ByVal ws As Worksheet, _
                                                ByVal sectionName As String, _
                                                ByVal assemblyName As String) As Long
     Dim sectionRow As Long
@@ -214,7 +214,7 @@ Public Function FindAssemblyHeaderRowInSection(ByVal ws As Worksheet, _
 
     sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
-        FindAssemblyHeaderRowInSection = 0
+        FindAssemblyHeaderRow = 0
         Exit Function
     End If
 
@@ -226,13 +226,13 @@ Public Function FindAssemblyHeaderRowInSection(ByVal ws As Worksheet, _
             currentAssemblyName = GetAssemblyNameAtRow(ws, rowNumber)
 
             If StrComp(currentAssemblyName, assemblyName, vbTextCompare) = 0 Then
-                FindAssemblyHeaderRowInSection = rowNumber
+                FindAssemblyHeaderRow = rowNumber
                 Exit Function
             End If
         End If
     Next rowNumber
 
-    FindAssemblyHeaderRowInSection = 0
+    FindAssemblyHeaderRow = 0
 End Function
 
 ' =========================================================
@@ -256,7 +256,7 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    assemblyHeaderRow = FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
+    assemblyHeaderRow = FindAssemblyHeaderRow(ws, sectionName, assemblyName)
     If assemblyHeaderRow = 0 Then
         FindInsertRowForCustomComponent = 0
         Exit Function
@@ -275,7 +275,7 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
 End Function
 
 ' Returns the row numbers of all assembly header rows inside the specified section.
-Public Function GetAssemblyHeaderRowsInSection(ByVal ws As Worksheet, _
+Public Function GetAssemblyHeaderRows(ByVal ws As Worksheet, _
                                                ByVal sectionName As String, _
                                                ByRef assemblyRows() As Long, _
                                                ByRef errorMessage As String) As Boolean
@@ -290,7 +290,7 @@ Public Function GetAssemblyHeaderRowsInSection(ByVal ws As Worksheet, _
     sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
-        GetAssemblyHeaderRowsInSection = False
+        GetAssemblyHeaderRows = False
         Exit Function
     End If
 
@@ -306,18 +306,18 @@ Public Function GetAssemblyHeaderRowsInSection(ByVal ws As Worksheet, _
 
     If count = 0 Then
         errorMessage = "No assembly header rows were found inside section '" & sectionName & "'."
-        GetAssemblyHeaderRowsInSection = False
+        GetAssemblyHeaderRows = False
         Exit Function
     End If
 
-    GetAssemblyHeaderRowsInSection = True
+    GetAssemblyHeaderRows = True
 End Function
 
 
 ' Returns the last row that belongs to the specified assembly block inside the section.
 ' The block ends at the row before the next assembly header,
 ' or at the row before the next section header if there is no next assembly.
-Public Function FindAssemblyBlockEndRowInSection(ByVal ws As Worksheet, _
+Public Function FindAssemblyEndRow(ByVal ws As Worksheet, _
                                                  ByVal sectionName As String, _
                                                  ByVal assemblyName As String) As Long
     Dim assemblyHeaderRow As Long
@@ -327,13 +327,13 @@ Public Function FindAssemblyBlockEndRowInSection(ByVal ws As Worksheet, _
 
     sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
-        FindAssemblyBlockEndRowInSection = 0
+        FindAssemblyEndRow = 0
         Exit Function
     End If
 
-    assemblyHeaderRow = FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
+    assemblyHeaderRow = FindAssemblyHeaderRow(ws, sectionName, assemblyName)
     If assemblyHeaderRow = 0 Then
-        FindAssemblyBlockEndRowInSection = 0
+        FindAssemblyEndRow = 0
         Exit Function
     End If
 
@@ -341,10 +341,10 @@ Public Function FindAssemblyBlockEndRowInSection(ByVal ws As Worksheet, _
 
     For rowNumber = assemblyHeaderRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
-            FindAssemblyBlockEndRowInSection = rowNumber - 1
+            FindAssemblyEndRow = rowNumber - 1
             Exit Function
         End If
     Next rowNumber
 
-    FindAssemblyBlockEndRowInSection = nextSectionRow - 1
+    FindAssemblyEndRow = nextSectionRow - 1
 End Function

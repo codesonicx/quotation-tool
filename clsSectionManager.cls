@@ -143,7 +143,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    success = sectionFinder.GetAssemblyHeaderRowsInSection(ws, sectionName, assemblyRows, errorMessage)
+    success = sectionFinder.GetAssemblyHeaderRows(ws, sectionName, assemblyRows, errorMessage)
     If Not success Then
         RecalculateSectionTotals = False
         Exit Function
@@ -196,14 +196,14 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
 
     Set sectionFinder = New clsSectionFinder
 
-    assemblyRow = sectionFinder.FindAssemblyHeaderRowInSection(ws, sectionName, assemblyName)
+    assemblyRow = sectionFinder.FindAssemblyHeaderRow(ws, sectionName, assemblyName)
     If assemblyRow = 0 Then
         errorMessage = "Assembly '" & assemblyName & "' was not found in section '" & sectionName & "'."
         RemoveAssemblyFromSection = False
         Exit Function
     End If
 
-    blockEndRow = sectionFinder.FindAssemblyBlockEndRowInSection(ws, sectionName, assemblyName)
+    blockEndRow = sectionFinder.FindAssemblyEndRow(ws, sectionName, assemblyName)
     If blockEndRow = 0 Or blockEndRow < assemblyRow Then
         errorMessage = "Could not determine the full row range for assembly '" & assemblyName & "'."
         RemoveAssemblyFromSection = False
