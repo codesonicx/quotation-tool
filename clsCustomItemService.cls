@@ -1,11 +1,10 @@
 Option Explicit
 
 ' =========================================================
-' clsCustomItemsService
+' clsCustomItemService
 '
 ' Purpose:
-' Manages insertion of custom/manual components into an
-' existing assembly inside the target worksheet.
+' Inserts custom/manual components into an existing assembly.
 ' =========================================================
 
 Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
@@ -63,8 +62,6 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     wsTarget.Rows(insertRow).Insert Shift:=xlShiftDown
     Set insertedRow = wsTarget.Rows(insertRow)
 
-    worksheetFormatter.FormatCustomItemRow insertedRow
-
     ' Copy the template row into the inserted target row.
     Set dst = wsTarget.Range( _
         wsTarget.Cells(insertRow, COL_COPY_START), _
@@ -73,7 +70,8 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     src.Copy Destination:=dst
     Application.CutCopyMode = False
 
-    ' Fill values and formulas into the inserted row.
+    worksheetFormatter.FormatCustomItemRow insertedRow
+
     If Not PopulateInsertedCustomRow(wsTarget, insertRow, customData, errorMessage) Then
         InsertCustomComponentIntoAssembly = False
         Exit Function
@@ -87,15 +85,12 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
     InsertCustomComponentIntoAssembly = True
 End Function
 
-' =========================================================
-' Row population
-' =========================================================
-
-' Writes custom values and formulas into the inserted row.
 Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
                                            ByVal targetRow As Long, _
                                            ByVal customData As Collection, _
                                            ByRef errorMessage As String) As Boolean
+    Dim formulaService As clsFormulaService
+
     Dim compCol As Long
     Dim compDesCol As Long
     Dim compBuildCol As Long
@@ -110,6 +105,8 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     Dim compListCol As Long
 
     errorMessage = vbNullString
+
+    Set formulaService = New clsFormulaService
 
     compCol = FindHeaderColumn(wsTarget, HEADER_COMPONENT)
     compDesCol = FindHeaderColumn(wsTarget, HEADER_COMP_DES)
@@ -141,14 +138,14 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     End If
 
     If compListCol > 0 Then
-        WriteComponentListNumber wsTarget, targetRow, compListCol
+        formulaService.WriteComponentListNumber wsTarget, targetRow, compListCol
     End If
 
-    WriteDesignFormula wsTarget, targetRow, designCol, sectDesCol, CDbl(customData("des"))
-    WriteBuildFormula wsTarget, targetRow, constrCol, sectBuildCol, CDbl(customData("constr"))
-    WriteBuildFormula wsTarget, targetRow, debugCol, sectBuildCol, CDbl(customData("debug"))
-    WriteBuildFormula wsTarget, targetRow, installCol, sectBuildCol, CDbl(customData("inst"))
-    WriteBuildFormula wsTarget, targetRow, startCol, sectBuildCol, CDbl(customData("start"))
+    formulaService.WriteDesignFormula wsTarget, targetRow, designCol, sectDesCol, CDbl(customData("des"))
+    formulaService.WriteBuildFormula wsTarget, targetRow, constrCol, sectBuildCol, CDbl(customData("constr"))
+    formulaService.WriteBuildFormula wsTarget, targetRow, debugCol, sectBuildCol, CDbl(customData("debug"))
+    formulaService.WriteBuildFormula wsTarget, targetRow, installCol, sectBuildCol, CDbl(customData("inst"))
+    formulaService.WriteBuildFormula wsTarget, targetRow, startCol, sectBuildCol, CDbl(customData("start"))
 
     If matCol > 0 Then
         wsTarget.Cells(targetRow, matCol).Value = CLng(customData("mat"))
@@ -157,50 +154,6 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     PopulateInsertedCustomRow = True
 End Function
 
-' =========================================================
-' Formula helpers
-' =========================================================
-
-' Writes the design-hours formula using Sect Des. as the multiplier source.
-Private Sub WriteDesignFormula(ByVal wsTarget As Worksheet, _
-                               ByVal targetRow As Long, _
-                               ByVal targetCol As Long, _
-                               ByVal sourceCol As Long, _
-                               ByVal multiplier As Double)
-    If targetCol > 0 And sourceCol > 0 Then
-        wsTarget.Cells(targetRow, targetCol).Formula = "=" & _
-            wsTarget.Cells(targetRow, sourceCol).Address(False, False) & "*" & multiplier
-    End If
-End Sub
-
-' Writes a formula using Sect Build as the multiplier source.
-Private Sub WriteBuildFormula(ByVal wsTarget As Worksheet, _
-                              ByVal targetRow As Long, _
-                              ByVal targetCol As Long, _
-                              ByVal sourceCol As Long, _
-                              ByVal multiplier As Double)
-    If targetCol > 0 And sourceCol > 0 Then
-        wsTarget.Cells(targetRow, targetCol).Formula = "=" & _
-            wsTarget.Cells(targetRow, sourceCol).Address(False, False) & "*" & multiplier
-    End If
-End Sub
-
-' Writes the next "Comp List" number based on the previous row when available.
-Private Sub WriteComponentListNumber(ByVal wsTarget As Worksheet, _
-                                     ByVal targetRow As Long, _
-                                     ByVal compListCol As Long)
-    If targetRow > 1 And IsNumeric(wsTarget.Cells(targetRow - 1, compListCol).Value) Then
-        wsTarget.Cells(targetRow, compListCol).Value = CLng(wsTarget.Cells(targetRow - 1, compListCol).Value) + 1
-    Else
-        wsTarget.Cells(targetRow, compListCol).Value = 1
-    End If
-End Sub
-
-' =========================================================
-' Search helpers
-' =========================================================
-
-' Finds an exact text match in the requested worksheet column.
 Private Function FindExactTextInColumn(ByVal ws As Worksheet, _
                                        ByVal colIndex As Long, _
                                        ByVal findText As String) As Long
@@ -219,7 +172,6 @@ Private Function FindExactTextInColumn(ByVal ws As Worksheet, _
     End If
 End Function
 
-' Finds a header column by searching row 1 for an exact header label.
 Private Function FindHeaderColumn(ByVal ws As Worksheet, ByVal headerText As String) As Long
     Dim foundCell As Range
 
