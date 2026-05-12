@@ -101,14 +101,14 @@ Public Function RemoveSection(ByVal ws As Worksheet, _
 
     Set sectionFinder = New clsSectionFinder
 
-    sectionRow = sectionFinder.FindSectionRow(ws, sectionName)
+    sectionRow = sectionFinder.FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         RemoveSection = False
         Exit Function
     End If
 
-    nextSectionRow = sectionFinder.FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = sectionFinder.FindNextSectionHeaderRowAfter(ws, sectionRow)
 
     ' Delete from the section header row
     ' down to the row before the next section
@@ -136,7 +136,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
     errorMessage = vbNullString
     Set sectionFinder = New clsSectionFinder
 
-    sectionRow = sectionFinder.FindSectionRow(ws, sectionName)
+    sectionRow = sectionFinder.FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         RecalculateSectionTotals = False

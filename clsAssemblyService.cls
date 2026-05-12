@@ -109,7 +109,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
         Exit Function
     End If
 
-    sectionRow = sectionFinder.FindSectionRow(wsTarget, sectionName)
+    sectionRow = sectionFinder.FindSectionHeaderRow(wsTarget, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found in the active sheet."
         InsertAssembliesIntoSection = False
@@ -119,7 +119,7 @@ Public Function InsertAssembliesIntoSection(ByVal wsTarget As Worksheet, _
     For itemIndex = LBound(items) To UBound(items)
         ' Recalculate the section boundary before each insert,
         ' because previous inserts push the next section downward.
-        insertRow = sectionFinder.FindNextSectionHeaderRow(wsTarget, sectionRow)
+        insertRow = sectionFinder.FindNextSectionHeaderRowAfter(wsTarget, sectionRow)
 
         success = CopyAssemblyBlockIntoTarget( _
             wsLib, _

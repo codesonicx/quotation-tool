@@ -61,25 +61,25 @@ End Function
 
 ' Finds the next section header row below the given section header row.
 ' If there is no next section, returns the row after the last used row.
-Public Function FindNextSectionHeaderRow(ByVal ws As Worksheet, ByVal sectionHeaderRow As Long) As Long
+Public Function FindNextSectionHeaderRowAfter(ByVal ws As Worksheet, ByVal sectionHeaderRow As Long) As Long
     Dim lastRow As Long
     Dim rowNumber As Long
 
     lastRow = modUtils.GetLastUsedRow(ws)
 
     If lastRow = 0 Then
-        FindNextSectionHeaderRow = sectionHeaderRow + 1
+        FindNextSectionHeaderRowAfter = sectionHeaderRow + 1
         Exit Function
     End If
 
     For rowNumber = sectionHeaderRow + 1 To lastRow
         If IsSectionHeaderRow(ws, rowNumber) Then
-            FindNextSectionHeaderRow = rowNumber
+            FindNextSectionHeaderRowAfter = rowNumber
             Exit Function
         End If
     Next rowNumber
 
-    FindNextSectionHeaderRow = lastRow + 1
+    FindNextSectionHeaderRowAfter = lastRow + 1
 End Function
 
 ' =========================================================
@@ -128,12 +128,12 @@ End Function
 
 ' Finds the row of the requested section header.
 ' Returns 0 when the section does not exist or the matched row is not a valid section header.
-Public Function FindSectionRow(ByVal ws As Worksheet, ByVal sectionName As String) As Long
+Public Function FindSectionHeaderRow(ByVal ws As Worksheet, ByVal sectionName As String) As Long
     Dim matchCell As Range
 
     sectionName = modUtils.NormalizeText(sectionName)
     If sectionName = "" Then
-        FindSectionRow = 0
+        FindSectionHeaderRow = 0
         Exit Function
     End If
 
@@ -143,14 +143,14 @@ Public Function FindSectionRow(ByVal ws As Worksheet, ByVal sectionName As Strin
                                                          MatchCase:=False)
 
     If matchCell Is Nothing Then
-        FindSectionRow = 0
+        FindSectionHeaderRow = 0
         Exit Function
     End If
 
     If IsSectionHeaderRow(ws, matchCell.row) Then
-        FindSectionRow = matchCell.row
+        FindSectionHeaderRow = matchCell.row
     Else
-        FindSectionRow = 0
+        FindSectionHeaderRow = 0
     End If
 End Function
 
@@ -172,14 +172,14 @@ Public Function GetAssembliesInSection(ByVal ws As Worksheet, _
     errorMessage = vbNullString
     count = 0
 
-    sectionRow = FindSectionRow(ws, sectionName)
+    sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         GetAssembliesInSection = False
         Exit Function
     End If
 
-    nextSectionRow = FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = FindNextSectionHeaderRowAfter(ws, sectionRow)
 
     For rowNumber = sectionRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
@@ -212,13 +212,13 @@ Public Function FindAssemblyHeaderRowInSection(ByVal ws As Worksheet, _
     Dim rowNumber As Long
     Dim currentAssemblyName As String
 
-    sectionRow = FindSectionRow(ws, sectionName)
+    sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         FindAssemblyHeaderRowInSection = 0
         Exit Function
     End If
 
-    nextSectionRow = FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = FindNextSectionHeaderRowAfter(ws, sectionRow)
     assemblyName = modUtils.NormalizeText(assemblyName)
 
     For rowNumber = sectionRow + 1 To nextSectionRow - 1
@@ -250,7 +250,7 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
     Dim nextSectionRow As Long
     Dim rowNumber As Long
 
-    sectionRow = FindSectionRow(ws, sectionName)
+    sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         FindInsertRowForCustomComponent = 0
         Exit Function
@@ -262,7 +262,7 @@ Public Function FindInsertRowForCustomComponent(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    nextSectionRow = FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = FindNextSectionHeaderRowAfter(ws, sectionRow)
 
     For rowNumber = assemblyHeaderRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
@@ -287,14 +287,14 @@ Public Function GetAssemblyHeaderRowsInSection(ByVal ws As Worksheet, _
     errorMessage = vbNullString
     count = 0
 
-    sectionRow = FindSectionRow(ws, sectionName)
+    sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         errorMessage = "Section '" & sectionName & "' was not found."
         GetAssemblyHeaderRowsInSection = False
         Exit Function
     End If
 
-    nextSectionRow = FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = FindNextSectionHeaderRowAfter(ws, sectionRow)
 
     For rowNumber = sectionRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
@@ -325,7 +325,7 @@ Public Function FindAssemblyBlockEndRowInSection(ByVal ws As Worksheet, _
     Dim nextSectionRow As Long
     Dim rowNumber As Long
 
-    sectionRow = FindSectionRow(ws, sectionName)
+    sectionRow = FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
         FindAssemblyBlockEndRowInSection = 0
         Exit Function
@@ -337,7 +337,7 @@ Public Function FindAssemblyBlockEndRowInSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    nextSectionRow = FindNextSectionHeaderRow(ws, sectionRow)
+    nextSectionRow = FindNextSectionHeaderRowAfter(ws, sectionRow)
 
     For rowNumber = assemblyHeaderRow + 1 To nextSectionRow - 1
         If IsAssemblyHeaderRow(ws, rowNumber) Then
