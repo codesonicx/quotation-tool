@@ -118,7 +118,7 @@ End Sub
 ' Loads all assembly headers for the currently selected section.
 Private Sub LoadAssembliesForSelectedSection()
     Dim ws As Worksheet
-    Dim sectionFinder As clsSectionFinder
+    Dim assemblyFinder As clsAssemblyFinder
     Dim assemblies() As String
     Dim errorMessage As String
     Dim success As Boolean
@@ -129,9 +129,9 @@ Private Sub LoadAssembliesForSelectedSection()
     If listSection.ListIndex < 0 Then Exit Sub
 
     Set ws = GetTargetWorksheet()
-    Set sectionFinder = New clsSectionFinder
+    Set assemblyFinder = New clsAssemblyFinder
 
-    success = sectionFinder.GetAssembliesInSection( _
+    success = assemblyFinder.GetAssembliesInSection( _
         ws, _
         GetSelectedSectionName(), _
         assemblies, _

@@ -14,7 +14,7 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
                                                   ByVal customData As Collection, _
                                                   ByRef errorMessage As String) As Boolean
     Dim wsLib As Worksheet
-    Dim sectionFinder As clsSectionFinder
+    Dim assemblyFinder As clsAssemblyFinder
     Dim sectionService As clsSectionService
 
     Dim insertRow As Long
@@ -27,12 +27,12 @@ Public Function InsertCustomComponentIntoAssembly(ByVal wsTarget As Worksheet, _
 
     errorMessage = vbNullString
 
-    Set sectionFinder = New clsSectionFinder
+    Set assemblyFinder = New clsAssemblyFinder
     Set sectionService = New clsSectionService
     Set wsLib = ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST)
 
     ' Find where the custom component should be inserted in the target sheet.
-    insertRow = sectionFinder.FindCustomComponentInsertRow(wsTarget, sectionName, assemblyName)
+    insertRow = assemblyFinder.FindCustomComponentInsertRow(wsTarget, sectionName, assemblyName)
     If insertRow = 0 Then
         errorMessage = "Could not determine insert row for assembly '" & assemblyName & "' in section '" & sectionName & "'."
         InsertCustomComponentIntoAssembly = False

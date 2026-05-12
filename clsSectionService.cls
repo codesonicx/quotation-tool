@@ -123,6 +123,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
                                          ByVal sectionName As String, _
                                          ByRef errorMessage As String) As Boolean
     Dim sectionFinder As clsSectionFinder
+    Dim assemblyFinder As clsAssemblyFinder
     Dim assemblyRows() As Long
 
     Dim sectionRow As Long
@@ -135,6 +136,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
 
     errorMessage = vbNullString
     Set sectionFinder = New clsSectionFinder
+    Set assemblyFinder = New clsAssemblyFinder
 
     sectionRow = sectionFinder.FindSectionHeaderRow(ws, sectionName)
     If sectionRow = 0 Then
@@ -143,7 +145,7 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    success = sectionFinder.GetAssemblyHeaderRows(ws, sectionName, assemblyRows, errorMessage)
+    success = assemblyFinder.GetAssemblyHeaderRows(ws, sectionName, assemblyRows, errorMessage)
     If Not success Then
         RecalculateSectionTotals = False
         Exit Function
@@ -174,7 +176,7 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
                                           ByVal sectionName As String, _
                                           ByVal assemblyName As String, _
                                           ByRef errorMessage As String) As Boolean
-    Dim sectionFinder As clsSectionFinder
+    Dim assemblyFinder As clsAssemblyFinder
     Dim assemblyRow As Long
     Dim blockEndRow As Long
 
@@ -194,16 +196,16 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
         Exit Function
     End If
 
-    Set sectionFinder = New clsSectionFinder
+    Set assemblyFinder = New clsAssemblyFinder
 
-    assemblyRow = sectionFinder.FindAssemblyHeaderRow(ws, sectionName, assemblyName)
+    assemblyRow = assemblyFinder.FindAssemblyHeaderRow(ws, sectionName, assemblyName)
     If assemblyRow = 0 Then
         errorMessage = "Assembly '" & assemblyName & "' was not found in section '" & sectionName & "'."
         RemoveAssemblyFromSection = False
         Exit Function
     End If
 
-    blockEndRow = sectionFinder.FindAssemblyEndRow(ws, sectionName, assemblyName)
+    blockEndRow = assemblyFinder.FindAssemblyEndRow(ws, sectionName, assemblyName)
     If blockEndRow = 0 Or blockEndRow < assemblyRow Then
         errorMessage = "Could not determine the full row range for assembly '" & assemblyName & "'."
         RemoveAssemblyFromSection = False

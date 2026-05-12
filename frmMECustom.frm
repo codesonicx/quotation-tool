@@ -180,7 +180,7 @@ End Sub
 
 ' Loads assemblies for the currently selected section.
 Private Sub LoadAssembliesForSelectedSection()
-    Dim sectionFinder As clsSectionFinder
+    Dim assemblyFinder As clsAssemblyFinder
     Dim success As Boolean
     Dim errorMessage As String
     Dim assemblies() As String
@@ -190,8 +190,8 @@ Private Sub LoadAssembliesForSelectedSection()
 
     If Me.cmbSection.ListIndex = -1 Then Exit Sub
 
-    Set sectionFinder = New clsSectionFinder
-    success = sectionFinder.GetAssembliesInSection( _
+    Set assemblyFinder = New clsAssemblyFinder
+    success = assemblyFinder.GetAssembliesInSection( _
         ActiveSheet, _
         Me.cmbSection.value, _
         assemblies, _
