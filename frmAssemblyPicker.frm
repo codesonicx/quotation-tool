@@ -1,8 +1,7 @@
 Option Explicit
 
 Private mDomain As String
-Private mAllItems() As String
-Private mItemCount As Long
+Private mItemFilter As clsListBoxFilter
 
 ' =========================================================
 ' Form lifecycle
@@ -14,6 +13,8 @@ Private Sub UserForm_Initialize()
 
     Me.ItemList.MultiSelect = fmMultiSelectMulti
     Me.txtItemFilter.Value = vbNullString
+
+    Set mItemFilter = New clsListBoxFilter
 End Sub
 
 Private Sub UserForm_Activate()
@@ -161,13 +162,11 @@ Private Sub LoadAssemblyItems()
     Dim success As Boolean
     Dim errorMessage As String
     Dim items() As String
-    Dim i As Long
 
     Set assemblyService = New clsAssemblyService
 
     Me.ItemList.Clear
-    mItemCount = 0
-    Erase mAllItems
+    mItemFilter.Clear
 
     success = assemblyService.GetAssemblyDisplayList( _
         ThisWorkbook.Worksheets(SHEET_ASSEMBLY_LIST), _
@@ -180,13 +179,7 @@ Private Sub LoadAssemblyItems()
         Exit Sub
     End If
 
-    mItemCount = UBound(items) - LBound(items) + 1
-    ReDim mAllItems(1 To mItemCount)
-
-    For i = LBound(items) To UBound(items)
-        mAllItems(i - LBound(items) + 1) = items(i)
-    Next i
-
+    mItemFilter.LoadFromArray items
     ApplyItemFilter
 End Sub
 
@@ -195,23 +188,9 @@ End Sub
 ' =========================================================
 
 Private Sub ApplyItemFilter()
-    Dim filterText As String
-    Dim itemText As String
-    Dim i As Long
+    If mItemFilter Is Nothing Then
+        Set mItemFilter = New clsListBoxFilter
+    End If
 
-    Me.ItemList.Clear
-
-    If mItemCount = 0 Then Exit Sub
-
-    filterText = LCase$(Trim$(Me.txtItemFilter.Value))
-
-    For i = 1 To mItemCount
-        itemText = CStr(mAllItems(i))
-
-        If filterText = vbNullString Then
-            Me.ItemList.AddItem itemText
-        ElseIf InStr(1, LCase$(itemText), filterText, vbTextCompare) > 0 Then
-            Me.ItemList.AddItem itemText
-        End If
-    Next i
+    mItemFilter.ApplyFilter Me.ItemList, Me.txtItemFilter.Value
 End Sub
