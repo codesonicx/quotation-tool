@@ -1,3 +1,5 @@
+Option Explicit
+
 Private Sub UserForm_Initialize()
     Me.Height = 300
     Me.Width = 520
@@ -71,3 +73,6 @@ Private Sub TMAssembly_Click()
     frmTimeAndMaterial.Show
 End Sub
 
+Private Sub btnDone_Click()
+    Unload Me
+End Sub
