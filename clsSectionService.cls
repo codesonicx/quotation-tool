@@ -187,3 +187,42 @@ Public Function RemoveAssemblyFromSection(ByVal ws As Worksheet, _
 
     RemoveAssemblyFromSection = True
 End Function
+
+Public Function GetUniqueSectionName(ByVal ws As Worksheet, _
+                                     ByVal baseName As String) As String
+    Dim candidateName As String
+    Dim suffixNumber As Long
+
+    candidateName = baseName
+
+    If Not SectionNameExists(ws, candidateName) Then
+        GetUniqueSectionName = candidateName
+        Exit Function
+    End If
+
+    suffixNumber = 2
+
+    Do
+        candidateName = baseName & " (" & suffixNumber & ")"
+
+        If Not SectionNameExists(ws, candidateName) Then
+            GetUniqueSectionName = candidateName
+            Exit Function
+        End If
+
+        suffixNumber = suffixNumber + 1
+    Loop
+End Function
+
+Private Function SectionNameExists(ByVal ws As Worksheet, _
+                                   ByVal sectionName As String) As Boolean
+    Dim foundCell As Range
+
+    Set foundCell = ws.Columns(COL_SECTION_NAME).Find( _
+        What:=sectionName, _
+        LookIn:=xlValues, _
+        LookAt:=xlWhole, _
+        MatchCase:=False)
+
+    SectionNameExists = Not foundCell Is Nothing
+End Function
