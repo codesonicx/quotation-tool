@@ -54,11 +54,11 @@ Private Sub btnCEAssembly_Click()
 End Sub
 
 Private Sub btnMECustom_Click()
-    frmMECustom.OpenForDomain DOMAIN_ME
+    frmCustomItem.OpenForDomain DOMAIN_ME
 End Sub
 
 Private Sub btnCECustom_Click()
-    frmMECustom.OpenForDomain DOMAIN_CE
+    frmCustomItem.OpenForDomain DOMAIN_CE
 End Sub
 
 Private Sub btnRemoveSection_Click()

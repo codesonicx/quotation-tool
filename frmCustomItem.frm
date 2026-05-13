@@ -21,6 +21,7 @@ Public Sub OpenForDomain(ByVal domain As String)
     End If
 
     Me.Caption = mDomain & " Custom Item"
+    Me.lblTitle.Caption = mDomain & " Custom Insert"
     Me.Show
 End Sub
 
@@ -71,7 +72,7 @@ End Sub
 Private Sub HandleAddAction()
     Dim modeText As String
 
-    modeText = Me.cmbInsertMode.Value
+    modeText = Me.cmbInsertMode.value
 
     If Not IsSectionSelected Then Exit Sub
 
@@ -129,7 +130,7 @@ Private Sub InsertCustomAssemblyWorkflow()
     Dim success As Boolean
     Dim errorMessage As String
 
-    sectionName = Me.cmbSection.Value
+    sectionName = Me.cmbSection.value
     Set customData = BuildCustomData()
 
     Set customItemService = New clsCustomItemService
@@ -194,7 +195,7 @@ End Sub
 
 ' Refreshes the assembly list only when assembly selection is relevant.
 Private Sub RefreshAssemblyList()
-    If Me.cmbInsertMode.Value = MODE_ADD_COMPONENT Then
+    If Me.cmbInsertMode.value = MODE_ADD_COMPONENT Then
         LoadAssembliesForSelectedSection
     Else
         Me.lstAssembly.Clear
@@ -313,7 +314,7 @@ End Function
 Private Sub UpdateInputFieldsForMode()
     Dim isComponentMode As Boolean
 
-    isComponentMode = (Me.cmbInsertMode.Value = MODE_ADD_COMPONENT)
+    isComponentMode = (Me.cmbInsertMode.value = MODE_ADD_COMPONENT)
 
     Me.txtDesignHours.Enabled = isComponentMode
     Me.txtConstHours.Enabled = isComponentMode
@@ -325,3 +326,4 @@ Private Sub UpdateInputFieldsForMode()
     Me.txtDesNum.Enabled = Not isComponentMode
     Me.txtBuildNum.Enabled = Not isComponentMode
 End Sub
+
