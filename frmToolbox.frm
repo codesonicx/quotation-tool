@@ -62,3 +62,12 @@ End Sub
 Private Sub btnRemoveAssembly_Click()
     frmItemRemove.Show
 End Sub
+
+Private Sub CEDesignHours_Click()
+    frmControlsDesign.Show
+End Sub
+
+Private Sub TMAssembly_Click()
+    frmTimeAndMaterial.Show
+End Sub
+
