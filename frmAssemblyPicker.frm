@@ -70,8 +70,6 @@ End Sub
 Private Sub HandleAddAction()
     Dim sectionName As String
     Dim selectedItems() As String
-    Dim i As Long
-    Dim count As Long
 
     Dim assemblyService As clsAssemblyService
     Dim success As Boolean
@@ -84,29 +82,10 @@ Private Sub HandleAddAction()
 
     sectionName = Me.SectionList.Value
 
-    count = 0
-
-    For i = 0 To Me.ItemList.ListCount - 1
-        If Me.ItemList.Selected(i) Then
-            count = count + 1
-        End If
-    Next i
-
-    If count = 0 Then
+    If Not mItemFilter.GetSelectedItems(Me.ItemList, selectedItems) Then
         MsgBox "Please select at least one item to add.", vbExclamation
         Exit Sub
     End If
-
-    ReDim selectedItems(1 To count)
-
-    count = 0
-
-    For i = 0 To Me.ItemList.ListCount - 1
-        If Me.ItemList.Selected(i) Then
-            count = count + 1
-            selectedItems(count) = Me.ItemList.List(i)
-        End If
-    Next i
 
     Set assemblyService = New clsAssemblyService
 
@@ -164,6 +143,10 @@ Private Sub LoadAssemblyItems()
     Dim items() As String
 
     Set assemblyService = New clsAssemblyService
+
+    If mItemFilter Is Nothing Then
+        Set mItemFilter = New clsListBoxFilter
+    End If
 
     Me.ItemList.Clear
     mItemFilter.Clear

@@ -4,17 +4,24 @@ Option Explicit
 ' clsListBoxFilter
 '
 ' Purpose:
-' Stores a master list of text items and applies a text filter
-' to a target ListBox.
+' Stores a master list of text items, applies a text filter
+' to a target ListBox, and preserves selected items across
+' filter changes.
 '
 ' Notes:
 ' - Filtering is case-insensitive.
-' - Current selection is cleared when the list is rebuilt.
-' - This class can be reused by multiple forms.
+' - Selections are preserved even when filtered items are hidden.
+' - This class assumes item display text is unique.
 ' =========================================================
 
 Private mItems() As String
 Private mItemCount As Long
+Private mSelectedItems As Object
+
+Private Sub Class_Initialize()
+    Set mSelectedItems = CreateObject("Scripting.Dictionary")
+    mSelectedItems.CompareMode = vbTextCompare
+End Sub
 
 Public Sub LoadFromArray(ByRef sourceItems() As String)
     Dim i As Long
@@ -54,6 +61,8 @@ Public Sub ApplyFilter(ByVal targetListBox As MSForms.ListBox, _
     Dim currentItem As String
     Dim normalizedFilter As String
 
+    SyncSelectionsFromListBox targetListBox
+
     targetListBox.Clear
 
     If mItemCount = 0 Then Exit Sub
@@ -64,16 +73,69 @@ Public Sub ApplyFilter(ByVal targetListBox As MSForms.ListBox, _
         currentItem = CStr(mItems(i))
 
         If normalizedFilter = vbNullString Then
-            targetListBox.AddItem currentItem
+            AddVisibleItem targetListBox, currentItem
         ElseIf ItemMatchesFilter(currentItem, normalizedFilter) Then
-            targetListBox.AddItem currentItem
+            AddVisibleItem targetListBox, currentItem
         End If
+    Next i
+End Sub
+
+Public Function GetSelectedItems(ByVal currentListBox As MSForms.ListBox, _
+                                 ByRef selectedItems() As String) As Boolean
+    Dim i As Long
+    Dim selectedCount As Long
+
+    SyncSelectionsFromListBox currentListBox
+
+    selectedCount = 0
+
+    For i = 1 To mItemCount
+        If mSelectedItems.Exists(MakeKey(mItems(i))) Then
+            selectedCount = selectedCount + 1
+        End If
+    Next i
+
+    If selectedCount = 0 Then
+        GetSelectedItems = False
+        Exit Function
+    End If
+
+    ReDim selectedItems(1 To selectedCount)
+
+    selectedCount = 0
+
+    For i = 1 To mItemCount
+        If mSelectedItems.Exists(MakeKey(mItems(i))) Then
+            selectedCount = selectedCount + 1
+            selectedItems(selectedCount) = mItems(i)
+        End If
+    Next i
+
+    GetSelectedItems = True
+End Function
+
+Public Function SelectedCount(ByVal currentListBox As MSForms.ListBox) As Long
+    SyncSelectionsFromListBox currentListBox
+    SelectedCount = mSelectedItems.Count
+End Function
+
+Public Sub ClearSelections(ByVal targetListBox As MSForms.ListBox)
+    Dim i As Long
+
+    mSelectedItems.RemoveAll
+
+    For i = 0 To targetListBox.ListCount - 1
+        targetListBox.Selected(i) = False
     Next i
 End Sub
 
 Public Sub Clear()
     mItemCount = 0
     Erase mItems
+
+    If Not mSelectedItems Is Nothing Then
+        mSelectedItems.RemoveAll
+    End If
 End Sub
 
 Public Function HasItems() As Boolean
@@ -84,8 +146,47 @@ Public Function ItemCount() As Long
     ItemCount = mItemCount
 End Function
 
+Private Sub AddVisibleItem(ByVal targetListBox As MSForms.ListBox, _
+                           ByVal itemText As String)
+    Dim newIndex As Long
+
+    targetListBox.AddItem itemText
+    newIndex = targetListBox.ListCount - 1
+
+    If mSelectedItems.Exists(MakeKey(itemText)) Then
+        targetListBox.Selected(newIndex) = True
+    End If
+End Sub
+
+Private Sub SyncSelectionsFromListBox(ByVal sourceListBox As MSForms.ListBox)
+    Dim i As Long
+    Dim itemText As String
+    Dim itemKey As String
+
+    If sourceListBox Is Nothing Then Exit Sub
+
+    For i = 0 To sourceListBox.ListCount - 1
+        itemText = CStr(sourceListBox.List(i))
+        itemKey = MakeKey(itemText)
+
+        If sourceListBox.Selected(i) Then
+            If Not mSelectedItems.Exists(itemKey) Then
+                mSelectedItems.Add itemKey, itemText
+            End If
+        Else
+            If mSelectedItems.Exists(itemKey) Then
+                mSelectedItems.Remove itemKey
+            End If
+        End If
+    Next i
+End Sub
+
 Private Function ItemMatchesFilter(ByVal itemText As String, _
                                    ByVal normalizedFilter As String) As Boolean
     ItemMatchesFilter = _
         (InStr(1, LCase$(itemText), normalizedFilter, vbTextCompare) > 0)
+End Function
+
+Private Function MakeKey(ByVal itemText As String) As String
+    MakeKey = LCase$(Trim$(itemText))
 End Function
