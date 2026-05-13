@@ -20,6 +20,7 @@ Public Const TEMPLATE_ME_MANUAL_ENTRY As String = "ME - Manual Entry"
 ' =========================================================
 ' General row / column structure
 ' =========================================================
+Public Const GRAND_TOTALS_ROW As Long = 2
 Public Const FIRST_DATA_ROW As Long = 3
 
 Public Const COL_SECTION_NAME As Long = 1        ' Column A
