@@ -10,6 +10,20 @@ Private Const FORM_WIDTH As Long = 310
 Private Const MODE_ADD_COMPONENT As String = "Add component"
 Private Const MODE_ADD_ASSEMBLY As String = "Add new assembly"
 
+Private mDomain As String
+
+Public Sub OpenForDomain(ByVal domain As String)
+    mDomain = UCase$(Trim$(domain))
+
+    If mDomain <> DOMAIN_ME And mDomain <> DOMAIN_CE Then
+        MsgBox "Invalid custom item domain: [" & mDomain & "]", vbExclamation
+        Exit Sub
+    End If
+
+    Me.Caption = mDomain & " Custom Item"
+    Me.Show
+End Sub
+
 ' =========================================================
 ' Form lifecycle
 ' =========================================================
@@ -282,6 +296,7 @@ Private Function BuildCustomData() As Collection
     Dim holder As Collection
     Set holder = New Collection
 
+    holder.Add mDomain, "domain"
     holder.Add Me.txtName.value, "name"
     holder.Add Val(Me.txtDesignHours.value), "des"
     holder.Add Val(Me.txtConstHours.value), "constr"

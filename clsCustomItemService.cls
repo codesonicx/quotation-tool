@@ -158,7 +158,7 @@ Private Function PopulateInsertedCustomRow(ByVal wsTarget As Worksheet, _
     Set formulaService = New clsFormulaService
 
     wsTarget.Cells(targetRow, COL_COMPONENT).Value = _
-        "[" & DOMAIN_ME & "] " & CStr(customData("name"))
+        "[" & CStr(customData("domain")) & "] " & CStr(customData("name"))
 
     wsTarget.Cells(targetRow, COL_COMP_DES).Value = _
         CLng(customData("desNum"))

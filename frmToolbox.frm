@@ -45,16 +45,20 @@ Private Sub btnNewSection_Click()
 End Sub
 
 Private Sub btnMEAssembly_Click()
-    frmAssemblyPicker.OpenForDomain "ME"
+    frmAssemblyPicker.OpenForDomain DOMAIN_ME
 End Sub
 
 
 Private Sub btnCEAssembly_Click()
-    frmAssemblyPicker.OpenForDomain "CE"
+    frmAssemblyPicker.OpenForDomain DOMAIN_CE
 End Sub
 
 Private Sub btnMECustom_Click()
-    frmMECustom.Show
+    frmMECustom.OpenForDomain DOMAIN_ME
+End Sub
+
+Private Sub btnCECustom_Click()
+    frmMECustom.OpenForDomain DOMAIN_CE
 End Sub
 
 Private Sub btnRemoveSection_Click()
