@@ -195,3 +195,35 @@ Public Sub WriteAssemblyTotalFormulas(ByVal ws As Worksheet, _
     Next colIndex
 
 End Sub
+
+Public Sub WriteGrandTotalFormulas(ByVal ws As Worksheet, _
+                                   ByRef sectionRows() As Long)
+    Dim colIndex As Long
+    Dim i As Long
+    Dim formulaText As String
+    Dim columnLetter As String
+
+    For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
+
+        columnLetter = Split(ws.Cells(1, colIndex).Address(False, False), "1")(0)
+
+        formulaText = "=SUM("
+
+        For i = LBound(sectionRows) To UBound(sectionRows)
+
+            If i > LBound(sectionRows) Then
+                formulaText = formulaText & ","
+            End If
+
+            formulaText = formulaText & columnLetter & sectionRows(i)
+
+        Next i
+
+        formulaText = formulaText & ")"
+
+        ws.Cells(GRAND_TOTALS_ROW, colIndex).Formula = formulaText
+
+    Next colIndex
+
+    ws.Cells(GRAND_TOTALS_ROW, COL_PERCENT).Formula = "=(AF2-Y2)/+AF2"
+End Sub

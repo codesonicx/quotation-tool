@@ -99,6 +99,11 @@ Public Function RemoveSection(ByVal ws As Worksheet, _
     ' down to the row before the next section
     ws.Rows(sectionRow & ":" & (nextSectionRow - 1)).Delete Shift:=xlUp
 
+    If Not RecalculateGrandTotals(ws, errorMessage) Then
+        RemoveSection = False
+        Exit Function
+    End If
+
     RemoveSection = True
 End Function
 
@@ -133,6 +138,11 @@ Public Function RecalculateSectionTotals(ByVal ws As Worksheet, _
     End If
 
     formulaService.WriteSectionTotalFormulas ws, sectionRow, assemblyRows
+
+    If Not RecalculateGrandTotals(ws, errorMessage) Then
+        RecalculateSectionTotals = False
+        Exit Function
+    End If
 
     RecalculateSectionTotals = True
 End Function
@@ -225,4 +235,25 @@ Private Function SectionNameExists(ByVal ws As Worksheet, _
         MatchCase:=False)
 
     SectionNameExists = Not foundCell Is Nothing
+End Function
+
+Public Function RecalculateGrandTotals(ByVal ws As Worksheet, _
+                                       ByRef errorMessage As String) As Boolean
+    Dim sectionFinder As clsSectionFinder
+    Dim formulaService As clsFormulaService
+    Dim sectionRows() As Long
+
+    errorMessage = vbNullString
+
+    Set sectionFinder = New clsSectionFinder
+    Set formulaService = New clsFormulaService
+
+    If Not sectionFinder.GetSectionHeaderRows(ws, sectionRows, errorMessage) Then
+        RecalculateGrandTotals = False
+        Exit Function
+    End If
+
+    formulaService.WriteGrandTotalFormulas ws, sectionRows
+
+    RecalculateGrandTotals = True
 End Function

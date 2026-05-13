@@ -119,3 +119,38 @@ Public Function GetSectionNames(ByVal ws As Worksheet, _
 
     GetSectionNames = True
 End Function
+
+Public Function GetSectionHeaderRows(ByVal ws As Worksheet, _
+                                     ByRef sectionRows() As Long, _
+                                     ByRef errorMessage As String) As Boolean
+    Dim lastRow As Long
+    Dim rowNumber As Long
+    Dim count As Long
+
+    errorMessage = vbNullString
+    count = 0
+
+    lastRow = modUtils.GetLastUsedRow(ws)
+
+    If lastRow < FIRST_DATA_ROW Then
+        errorMessage = "No sections found."
+        GetSectionHeaderRows = False
+        Exit Function
+    End If
+
+    For rowNumber = FIRST_DATA_ROW To lastRow
+        If IsSectionHeaderRow(ws, rowNumber) Then
+            count = count + 1
+            ReDim Preserve sectionRows(1 To count)
+            sectionRows(count) = rowNumber
+        End If
+    Next rowNumber
+
+    If count = 0 Then
+        errorMessage = "No sections found."
+        GetSectionHeaderRows = False
+        Exit Function
+    End If
+
+    GetSectionHeaderRows = True
+End Function
