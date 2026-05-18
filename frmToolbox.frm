@@ -77,6 +77,10 @@ Private Sub TMAssembly_Click()
     frmTimeAndMaterial.Show
 End Sub
 
+Private Sub btnAssemblyPercent_Click()
+    frmPercentItemAdd.Show
+End Sub
+
 Private Sub btnDone_Click()
     Unload Me
 End Sub
