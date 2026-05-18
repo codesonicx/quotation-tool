@@ -145,3 +145,20 @@ Public Const FORMAT_INTEGER As String = "#,##0"
 Public Const FORMAT_DECIMAL As String = "#,##0.0"
 Public Const FORMAT_CURRENCY As String = "$#,##0.00"
 Public Const FORMAT_PERCENT As String = "0%"
+
+' =========================================================
+' Component list sheets
+' =========================================================
+Public Const SHEET_ME_COMPONENT_LIST As String = "ME Component List"
+Public Const SHEET_CE_COMPONENT_LIST As String = "CE Component List"
+
+Public Const COMPONENT_LIST_FIRST_DATA_ROW As Long = 2
+
+Public Const COL_COMPONENT_LIST_ID As Long = 1
+Public Const COL_COMPONENT_LIST_ITEM As Long = 2
+Public Const COL_COMPONENT_LIST_DESIGN As Long = 3
+Public Const COL_COMPONENT_LIST_CONSTRUCTION As Long = 4
+Public Const COL_COMPONENT_LIST_DEBUG As Long = 5
+Public Const COL_COMPONENT_LIST_INSTALLATION As Long = 6
+Public Const COL_COMPONENT_LIST_STARTUP As Long = 7
+Public Const COL_COMPONENT_LIST_MATERIAL_RATE As Long = 8
