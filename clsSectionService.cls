@@ -32,6 +32,8 @@ Public Function AddSection(ByVal ws As Worksheet, _
                            ByRef errorMessage As String) As Boolean
     Dim newRow As Long
     Dim existing As Range
+    Dim worksheetFormatter As clsWorksheetFormatter
+    Set worksheetFormatter = New clsWorksheetFormatter
 
     errorMessage = vbNullString
     sectionName = modUtils.NormalizeText(sectionName)
@@ -64,6 +66,7 @@ Public Function AddSection(ByVal ws As Worksheet, _
 
     ws.Cells(newRow, COL_SECTION_NAME).Value2 = sectionName
     ws.Rows(newRow).Interior.ColorIndex = COLOR_INDEX_SECTION_BLUE
+    worksheetFormatter.ApplyEstimateNumberFormats ws, newRow
 
     AddSection = True
 End Function

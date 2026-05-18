@@ -202,6 +202,8 @@ Public Sub WriteGrandTotalFormulas(ByVal ws As Worksheet, _
     Dim i As Long
     Dim formulaText As String
     Dim columnLetter As String
+    Dim worksheetFormatter As clsWorksheetFormatter
+    Set worksheetFormatter = New clsWorksheetFormatter
 
     For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
 
@@ -226,4 +228,5 @@ Public Sub WriteGrandTotalFormulas(ByVal ws As Worksheet, _
     Next colIndex
 
     ws.Cells(GRAND_TOTALS_ROW, COL_PERCENT).Formula = "=(AF2-Y2)/+AF2"
+    worksheetFormatter.ApplyEstimateNumberFormats ws, GRAND_TOTALS_ROW
 End Sub
