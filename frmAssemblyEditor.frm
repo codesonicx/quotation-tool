@@ -3,8 +3,8 @@ Option Explicit
 ' =========================================================
 ' Form configuration constants
 ' =========================================================
-Private Const FORM_HEIGHT As Long = 520
-Private Const FORM_WIDTH As Long = 700
+Private Const FORM_HEIGHT As Long = 440
+Private Const FORM_WIDTH As Long = 570
 Private Const FORM_TITLE As String = "Modify Item"
 
 Private mDomain As String
@@ -20,7 +20,7 @@ Private Sub UserForm_Initialize()
     Set mComponentFilter = New clsListBoxFilter
 
     mDomain = DOMAIN_ME
-    Me.optME.Value = True
+    Me.optME.value = True
 
     Me.lstCurrentComponents.MultiSelect = fmMultiSelectMulti
     Me.lstComponentLibrary.MultiSelect = fmMultiSelectMulti
@@ -53,7 +53,7 @@ Private Sub btnDone_Click()
 End Sub
 
 Private Sub btnClearSearch_Click()
-    Me.txtComponentFilter.Value = vbNullString
+    Me.txtComponentFilter.value = vbNullString
     ApplyComponentFilter
 End Sub
 
@@ -288,7 +288,7 @@ Private Sub LoadCurrentComponentsForSelectedAssembly()
     For i = 1 To childCount
         Me.lstCurrentComponents.AddItem childNames(i)
         newIndex = Me.lstCurrentComponents.ListCount - 1
-        Me.lstCurrentComponents.List(newIndex, 1) = CStr(childRows(i))
+        Me.lstCurrentComponents.list(newIndex, 1) = CStr(childRows(i))
     Next i
 End Sub
 
@@ -305,7 +305,7 @@ Private Sub LoadComponentLibraryForDomain()
     End If
 
     Me.lstComponentLibrary.Clear
-    Me.txtComponentFilter.Value = vbNullString
+    Me.txtComponentFilter.value = vbNullString
     mComponentFilter.Clear
 
     success = componentFinder.GetComponentNames( _
@@ -327,7 +327,7 @@ Private Sub ApplyComponentFilter()
         Set mComponentFilter = New clsListBoxFilter
     End If
 
-    mComponentFilter.ApplyFilter Me.lstComponentLibrary, Me.txtComponentFilter.Value
+    mComponentFilter.ApplyFilter Me.lstComponentLibrary, Me.txtComponentFilter.value
 End Sub
 
 ' =========================================================
@@ -357,11 +357,11 @@ End Function
 ' =========================================================
 
 Private Function GetSelectedSectionName() As String
-    GetSelectedSectionName = CStr(Me.lstSections.List(Me.lstSections.ListIndex))
+    GetSelectedSectionName = CStr(Me.lstSections.list(Me.lstSections.ListIndex))
 End Function
 
 Private Function GetSelectedAssemblyName() As String
-    GetSelectedAssemblyName = CStr(Me.lstAssemblies.List(Me.lstAssemblies.ListIndex))
+    GetSelectedAssemblyName = CStr(Me.lstAssemblies.list(Me.lstAssemblies.ListIndex))
 End Function
 
 Private Function GetSelectedCurrentComponentRows(ByRef selectedRows() As Long) As Boolean
@@ -388,9 +388,10 @@ Private Function GetSelectedCurrentComponentRows(ByRef selectedRows() As Long) A
     For i = 0 To Me.lstCurrentComponents.ListCount - 1
         If Me.lstCurrentComponents.Selected(i) Then
             count = count + 1
-            selectedRows(count) = CLng(Me.lstCurrentComponents.List(i, 1))
+            selectedRows(count) = CLng(Me.lstCurrentComponents.list(i, 1))
         End If
     Next i
 
     GetSelectedCurrentComponentRows = True
 End Function
+
