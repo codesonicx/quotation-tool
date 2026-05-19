@@ -184,7 +184,13 @@ Public Sub WriteAssemblyTotalFormulas(ByVal ws As Worksheet, _
     Dim colIndex As Long
     Dim columnLetter As String
 
-    If lastChildRow < firstChildRow Then Exit Sub
+    If lastChildRow < firstChildRow Then
+        For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
+            ws.Cells(assemblyRow, colIndex).Value = 0
+        Next colIndex
+
+        Exit Sub
+    End If
 
     For colIndex = COL_SECTION_TOTAL_START To COL_SECTION_TOTAL_END
         columnLetter = Split(ws.Cells(1, colIndex).Address(False, False), "1")(0)

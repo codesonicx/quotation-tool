@@ -81,6 +81,10 @@ Private Sub btnCreateAssembly_Click()
     frmCustomAssemblyBuilder.Show
 End Sub
 
+Private Sub btnModifyItem_Click()
+    frmAssemblyEditor.Show
+End Sub
+
 Private Sub btnAssemblyPercent_Click()
     frmPercentItemAdd.Show
 End Sub

@@ -174,3 +174,37 @@ Private Sub WriteGeneratedChildRow(ByVal wsTarget As Worksheet, _
         targetRow, _
         child
 End Sub
+
+Public Function InsertGeneratedChildRow(ByVal wsTarget As Worksheet, _
+                                        ByVal insertRow As Long, _
+                                        ByVal child As Collection, _
+                                        ByRef errorMessage As String) As Boolean
+    Dim worksheetFormatter As clsWorksheetFormatter
+
+    errorMessage = vbNullString
+
+    Set worksheetFormatter = New clsWorksheetFormatter
+
+    wsTarget.Rows(insertRow).Insert Shift:=xlShiftDown
+
+    worksheetFormatter.FormatCustomItemRow wsTarget.Rows(insertRow)
+
+    WriteGeneratedChildRow wsTarget, insertRow, child
+
+    InsertGeneratedChildRow = True
+End Function
+
+Public Function CreateComponentListChild(ByVal componentData As Collection) As Collection
+
+    Set CreateComponentListChild = CreateChild( _
+        CStr(componentData("name")), _
+        1, _
+        1, _
+        CDbl(componentData("des")), _
+        CDbl(componentData("constr")), _
+        CDbl(componentData("debug")), _
+        CDbl(componentData("inst")), _
+        CDbl(componentData("start")), _
+        CDbl(componentData("mat")))
+
+End Function
