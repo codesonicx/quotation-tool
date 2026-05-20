@@ -168,3 +168,19 @@ Public Const COL_COMPONENT_LIST_MATERIAL_RATE As Long = 8
 ' =========================================================
 Public Const TABLE_ME_COMPONENT_LIST As String = "CompList"
 Public Const TABLE_CE_COMPONENT_LIST As String = "CVCompList"
+
+' =========================================================
+' Summary sheet
+' =========================================================
+Public Const SHEET_SUMMARY As String = "Summary"
+Public Const TABLE_SUMMARY As String = "SummaryTable"
+Public Const SUMMARY_HEADER_TAB_NAME As String = "Tab Name"
+
+' =========================================================
+' Fixed workbook sheets
+' =========================================================
+Public Const SHEET_COVER_PAGE As String = "Cover Page"
+Public Const SHEET_SETUP As String = "Set-Up"
+Public Const SHEET_UPDATING_SHEET As String = "Updating sheet"
+Public Const SHEET_DRIVERS As String = "Drivers"
+Public Const SHEET_NOTES As String = "Notes"
