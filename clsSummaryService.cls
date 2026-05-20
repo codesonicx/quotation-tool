@@ -134,6 +134,11 @@ Public Function RefreshSummary(ByVal wb As Workbook, _
 
     ' Keep only valid rows plus the Grand Total row.
     ResizeSummaryTable summaryTable, validSheetCount + 1
+
+    ' Excel tables may auto-fill old formulas after resize.
+    ' Force correct row-total formulas after the final resize.
+    FixSummaryTotalFormulas summarySheet, summaryTable
+
     ApplySummaryNumberFormats summaryTable
 
     RefreshSummary = True
@@ -234,16 +239,12 @@ Private Sub WriteSummaryRow(ByVal wsSummary As Worksheet, _
     wsSummary.Cells(rowIndex, 2).Value = meDesign
     wsSummary.Cells(rowIndex, 3).Value = meConstruction
     wsSummary.Cells(rowIndex, 4).Value = meInstallation
-
-    ' ME Total Hours = B + C + D from the same row.
-    wsSummary.Cells(rowIndex, 5).FormulaR1C1 = "=SUM(RC[-3],RC[-2],RC[-1])"
+    wsSummary.Cells(rowIndex, 5).Value = meDesign + meConstruction + meInstallation
 
     wsSummary.Cells(rowIndex, 6).Value = ceDesign
     wsSummary.Cells(rowIndex, 7).Value = ceConstruction
     wsSummary.Cells(rowIndex, 8).Value = ceInstallation
-
-    ' CE Total Hours = F + G + H from the same row.
-    wsSummary.Cells(rowIndex, 9).FormulaR1C1 = "=SUM(RC[-3],RC[-2],RC[-1])"
+    wsSummary.Cells(rowIndex, 9).Value = ceDesign + ceConstruction + ceInstallation
 
     wsSummary.Cells(rowIndex, 10).Value = budgetedTotal
     wsSummary.Cells(rowIndex, 11).Value = totalWithMarkup
@@ -275,6 +276,54 @@ Private Sub WriteGrandTotalRow(ByVal wsSummary As Worksheet, _
             wsSummary.Cells(firstDataRow, colIndex).Address(False, False) & ":" & _
             wsSummary.Cells(lastDataRow, colIndex).Address(False, False) & ")"
     Next colIndex
+
+End Sub
+
+Private Sub FixSummaryTotalFormulas(ByVal wsSummary As Worksheet, _
+                                    ByVal summaryTable As ListObject)
+    Dim firstDataRow As Long
+    Dim lastTableRow As Long
+    Dim grandTotalRow As Long
+    Dim rowIndex As Long
+
+    If summaryTable.DataBodyRange Is Nothing Then Exit Sub
+
+    firstDataRow = summaryTable.HeaderRowRange.Row + 1
+    lastTableRow = summaryTable.DataBodyRange.Rows(summaryTable.DataBodyRange.Rows.Count).Row
+    grandTotalRow = lastTableRow
+
+    ' Normal data rows:
+    ' E = SUM(B:D)
+    ' I = SUM(F:H)
+    For rowIndex = firstDataRow To grandTotalRow - 1
+        wsSummary.Cells(rowIndex, 5).Formula = "=SUM(" & _
+            wsSummary.Cells(rowIndex, 2).Address(False, False) & "," & _
+            wsSummary.Cells(rowIndex, 3).Address(False, False) & "," & _
+            wsSummary.Cells(rowIndex, 4).Address(False, False) & ")"
+
+        wsSummary.Cells(rowIndex, 9).Formula = "=SUM(" & _
+            wsSummary.Cells(rowIndex, 6).Address(False, False) & "," & _
+            wsSummary.Cells(rowIndex, 7).Address(False, False) & "," & _
+            wsSummary.Cells(rowIndex, 8).Address(False, False) & ")"
+    Next rowIndex
+
+    ' If there are no normal data rows, keep the Grand Total row as zero.
+    If grandTotalRow <= firstDataRow Then
+        wsSummary.Cells(grandTotalRow, 5).Value = 0
+        wsSummary.Cells(grandTotalRow, 9).Value = 0
+        Exit Sub
+    End If
+
+    ' Grand Total row:
+    ' E = SUM(E data rows)
+    ' I = SUM(I data rows)
+    wsSummary.Cells(grandTotalRow, 5).Formula = "=SUM(" & _
+        wsSummary.Cells(firstDataRow, 5).Address(False, False) & ":" & _
+        wsSummary.Cells(grandTotalRow - 1, 5).Address(False, False) & ")"
+
+    wsSummary.Cells(grandTotalRow, 9).Formula = "=SUM(" & _
+        wsSummary.Cells(firstDataRow, 9).Address(False, False) & ":" & _
+        wsSummary.Cells(grandTotalRow - 1, 9).Address(False, False) & ")"
 
 End Sub
 
