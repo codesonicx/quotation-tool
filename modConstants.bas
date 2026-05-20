@@ -162,3 +162,9 @@ Public Const COL_COMPONENT_LIST_DEBUG As Long = 5
 Public Const COL_COMPONENT_LIST_INSTALLATION As Long = 6
 Public Const COL_COMPONENT_LIST_STARTUP As Long = 7
 Public Const COL_COMPONENT_LIST_MATERIAL_RATE As Long = 8
+
+' =========================================================
+' Component list table names
+' =========================================================
+Public Const TABLE_ME_COMPONENT_LIST As String = "CompList"
+Public Const TABLE_CE_COMPONENT_LIST As String = "CVCompList"

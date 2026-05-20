@@ -89,6 +89,10 @@ Private Sub btnAssemblyPercent_Click()
     frmPercentItemAdd.Show
 End Sub
 
+Private Sub btnAddAssemblyToLibrary_Click()
+    frmAssemblyLibraryAdd.Show
+End Sub
+
 Private Sub btnDone_Click()
     Unload Me
 End Sub
