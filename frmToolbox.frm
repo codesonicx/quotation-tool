@@ -61,6 +61,10 @@ Private Sub btnCECustom_Click()
     frmCustomItem.OpenForDomain DOMAIN_CE
 End Sub
 
+Private Sub btnVisionSheetInsert_Click()
+    frmVisionWorkbookPicker.Show
+End Sub
+
 Private Sub btnRemoveSection_Click()
     frmSectionRemove.Show
 End Sub
