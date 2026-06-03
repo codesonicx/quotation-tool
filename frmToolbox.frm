@@ -2,7 +2,7 @@ Option Explicit
 
 Private Sub UserForm_Initialize()
     Me.Height = 300
-    Me.Width = 520
+    Me.Width = 360
 End Sub
 
 Private Sub UserForm_Activate()
@@ -61,10 +61,6 @@ Private Sub btnCECustom_Click()
     frmCustomItem.OpenForDomain DOMAIN_CE
 End Sub
 
-Private Sub btnVisionSheetInsert_Click()
-    frmVisionWorkbookPicker.Show
-End Sub
-
 Private Sub btnRemoveSection_Click()
     frmSectionRemove.Show
 End Sub
@@ -100,3 +96,4 @@ End Sub
 Private Sub btnDone_Click()
     Unload Me
 End Sub
+
