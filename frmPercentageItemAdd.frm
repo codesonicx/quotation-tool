@@ -65,8 +65,8 @@ Private Sub HandleCreateAction()
 
     sectionName = GetSelectedSectionName()
     assemblyName = GetSelectedAssemblyName()
-    componentName = Trim$(Me.txtComponentName.Value)
-    percentAmount = Val(Me.txtPercentAmount.Value)
+    componentName = Trim$(Me.txtComponentName.value)
+    percentAmount = Val(Me.txtPercentAmount.value)
 
     Set percentService = New clsPercentItemService
 
@@ -76,10 +76,11 @@ Private Sub HandleCreateAction()
         assemblyName, _
         componentName, _
         percentAmount, _
-        Me.chkDesign.Value, _
-        Me.chkConstruction.Value, _
-        Me.chkDebug.Value, _
-        Me.chkInstallation.Value, _
+        Me.chkDesign.value, _
+        Me.chkConstruction.value, _
+        Me.chkDebug.value, _
+        Me.chkMaterial.value, _
+        Me.chkInstallation.value, _
         errorMessage)
 
     If success Then
@@ -182,7 +183,7 @@ Private Function IsAssemblySelected() As Boolean
 End Function
 
 Private Function IsComponentNameEntered() As Boolean
-    If Trim$(Me.txtComponentName.Value) = vbNullString Then
+    If Trim$(Me.txtComponentName.value) = vbNullString Then
         MsgBox "Please enter a component name.", vbExclamation, FORM_TITLE
         IsComponentNameEntered = False
     Else
@@ -191,10 +192,11 @@ Private Function IsComponentNameEntered() As Boolean
 End Function
 
 Private Function IsPercentOptionSelected() As Boolean
-    If Not Me.chkDesign.Value _
-       And Not Me.chkConstruction.Value _
-       And Not Me.chkDebug.Value _
-       And Not Me.chkInstallation.Value Then
+    If Not Me.chkDesign.value _
+       And Not Me.chkConstruction.value _
+       And Not Me.chkDebug.value _
+       And Not Me.chkMaterial.value _
+       And Not Me.chkInstallation.value Then
 
         MsgBox "Please select at least one percentage source.", vbExclamation, FORM_TITLE
         IsPercentOptionSelected = False
@@ -208,9 +210,10 @@ End Function
 ' =========================================================
 
 Private Function GetSelectedSectionName() As String
-    GetSelectedSectionName = CStr(Me.lstSections.List(Me.lstSections.ListIndex))
+    GetSelectedSectionName = CStr(Me.lstSections.list(Me.lstSections.ListIndex))
 End Function
 
 Private Function GetSelectedAssemblyName() As String
-    GetSelectedAssemblyName = CStr(Me.lstAssemblies.List(Me.lstAssemblies.ListIndex))
+    GetSelectedAssemblyName = CStr(Me.lstAssemblies.list(Me.lstAssemblies.ListIndex))
 End Function
+

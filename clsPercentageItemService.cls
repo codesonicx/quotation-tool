@@ -14,6 +14,7 @@ Option Explicit
 '       T = Construction
 '       U = Debug/Tryout
 '       V = Installation
+'       X = Material
 ' - Writes the combined total into X.
 ' - Writes Y = X to avoid double-counting S:V + X.
 ' - Refreshes assembly totals, grouping, section totals, and grand totals.
@@ -27,6 +28,7 @@ Public Function InsertPercentItemIntoAssembly(ByVal wsTarget As Worksheet, _
                                               ByVal includeDesign As Boolean, _
                                               ByVal includeConstruction As Boolean, _
                                               ByVal includeDebug As Boolean, _
+                                              ByVal includeMaterial As Boolean, _
                                               ByVal includeInstallation As Boolean, _
                                               ByRef errorMessage As String) As Boolean
     Dim assemblyFinder As clsAssemblyFinder
@@ -78,6 +80,7 @@ Public Function InsertPercentItemIntoAssembly(ByVal wsTarget As Worksheet, _
         includeDesign, _
         includeConstruction, _
         includeDebug, _
+        includeMaterial, _
         includeInstallation
 
     assemblyEndRow = assemblyFinder.FindAssemblyEndRow(wsTarget, sectionName, assemblyName)
@@ -111,25 +114,26 @@ Private Sub WritePercentItemRow(ByVal ws As Worksheet, _
                                 ByVal includeDesign As Boolean, _
                                 ByVal includeConstruction As Boolean, _
                                 ByVal includeDebug As Boolean, _
+                                ByVal includeMaterial As Boolean, _
                                 ByVal includeInstallation As Boolean)
 
-    ws.Cells(rowIndex, COL_COMP_LIST).Value = GetNextComponentListNumber(ws, rowIndex)
-    ws.Cells(rowIndex, COL_COMPONENT).Value = componentName
+    ws.Cells(rowIndex, COL_COMP_LIST).value = GetNextComponentListNumber(ws, rowIndex)
+    ws.Cells(rowIndex, COL_COMPONENT).value = componentName
 
-    ws.Cells(rowIndex, COL_COMP_DES).Value = 1
-    ws.Cells(rowIndex, COL_COMP_BUILD).Value = 1
-    ws.Cells(rowIndex, COL_SECT_DES).Value = 0
-    ws.Cells(rowIndex, COL_SECT_BUILD).Value = 0
+    ws.Cells(rowIndex, COL_COMP_DES).value = 1
+    ws.Cells(rowIndex, COL_COMP_BUILD).value = 1
+    ws.Cells(rowIndex, COL_SECT_DES).value = 0
+    ws.Cells(rowIndex, COL_SECT_BUILD).value = 0
 
     ws.Cells(rowIndex, COL_MATERIAL_MARKUP).Formula = "=Drivers!$B$11"
     ws.Cells(rowIndex, COL_LABOR_MARKUP).Formula = "=Drivers!$B$12"
 
-    ws.Cells(rowIndex, COL_DESIGN_HOURS).Value = 0
-    ws.Cells(rowIndex, COL_CONSTRUCTION_HOURS).Value = 0
-    ws.Cells(rowIndex, COL_DEBUG_HOURS).Value = 0
-    ws.Cells(rowIndex, COL_INSTALLATION_HOURS).Value = 0
-    ws.Cells(rowIndex, COL_STARTUP_HOURS).Value = 0
-    ws.Cells(rowIndex, COL_MATERIAL_RATE).Value = 0
+    ws.Cells(rowIndex, COL_DESIGN_HOURS).value = 0
+    ws.Cells(rowIndex, COL_CONSTRUCTION_HOURS).value = 0
+    ws.Cells(rowIndex, COL_DEBUG_HOURS).value = 0
+    ws.Cells(rowIndex, COL_INSTALLATION_HOURS).value = 0
+    ws.Cells(rowIndex, COL_STARTUP_HOURS).value = 0
+    ws.Cells(rowIndex, COL_MATERIAL_RATE).value = 0
 
     ' These are the only budget columns we override.
     ws.Cells(rowIndex, COL_BUDGET_DESIGN).Formula = BuildSingleBudgetPercentFormula( _
@@ -144,9 +148,11 @@ Private Sub WritePercentItemRow(ByVal ws As Worksheet, _
     ws.Cells(rowIndex, COL_BUDGET_INSTALLATION).Formula = BuildSingleBudgetPercentFormula( _
         ws, firstSourceRow, lastSourceRow, COL_BUDGET_INSTALLATION, percentAmount, includeInstallation)
 
+    ws.Cells(rowIndex, COL_BUDGET_MATERIAL).Formula = BuildSingleBudgetPercentFormula( _
+    ws, firstSourceRow, lastSourceRow, COL_BUDGET_MATERIAL, percentAmount, includeMaterial)
+
     ' Leave the remaining budget buckets as normal zero values.
-    ws.Cells(rowIndex, COL_BUDGET_STARTUP).Value = 0
-    ws.Cells(rowIndex, COL_BUDGET_MATERIAL).Value = 0
+    ws.Cells(rowIndex, COL_BUDGET_STARTUP).value = 0
 
     WritePercentItemCostFormulas ws, rowIndex
 
@@ -154,8 +160,8 @@ End Sub
 
 Private Function GetNextComponentListNumber(ByVal ws As Worksheet, _
                                             ByVal rowIndex As Long) As Long
-    If rowIndex > 1 And IsNumeric(ws.Cells(rowIndex - 1, COL_COMP_LIST).Value) Then
-        GetNextComponentListNumber = CLng(ws.Cells(rowIndex - 1, COL_COMP_LIST).Value) + 1
+    If rowIndex > 1 And IsNumeric(ws.Cells(rowIndex - 1, COL_COMP_LIST).value) Then
+        GetNextComponentListNumber = CLng(ws.Cells(rowIndex - 1, COL_COMP_LIST).value) + 1
     Else
         GetNextComponentListNumber = 1
     End If
@@ -231,3 +237,4 @@ Private Sub WritePercentItemCostFormulas(ByVal ws As Worksheet, _
     '     ws.Cells(rowIndex, COL_MARKUP_TOTAL).Address(False, False)
 
 End Sub
+
