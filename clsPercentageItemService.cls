@@ -14,9 +14,8 @@ Option Explicit
 '       T = Construction
 '       U = Debug/Tryout
 '       V = Installation
-'       X = Material
-' - Writes the combined total into X.
-' - Writes Y = X to avoid double-counting S:V + X.
+'       X = Materia
+' - Writes Y = SUM of S up to X column
 ' - Refreshes assembly totals, grouping, section totals, and grand totals.
 ' =========================================================
 
