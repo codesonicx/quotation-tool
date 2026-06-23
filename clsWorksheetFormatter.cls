@@ -46,6 +46,8 @@ Public Sub FormatAssemblyHeaderRow(ByVal ws As Worksheet, _
             COLOR_ASSEMBLY_GRAY_B)
     End With
 
+    ws.Rows(rowIndex).OutlineLevel = 1
+
     ApplyEstimateNumberFormats ws, rowIndex
 
 End Sub
