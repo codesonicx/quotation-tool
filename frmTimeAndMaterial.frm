@@ -16,6 +16,7 @@ Private isRefreshing As Boolean
 
 Private Sub UserForm_Initialize()
     ConfigureForm
+    LoadDefaultsFromDrivers
     RefreshTotals
 End Sub
 
@@ -309,3 +310,36 @@ Private Function ToNumber(ByVal value As Variant) As Double
         ToNumber = Val(value)
     End If
 End Function
+
+
+Private Sub LoadDefaultsFromDrivers()
+    Dim wsDrivers As Worksheet
+
+    Set wsDrivers = ThisWorkbook.Worksheets("Drivers")
+
+    Me.txtNumPeople.Value = wsDrivers.Range("B13").Value
+    Me.txtNumWeeks.Value = wsDrivers.Range("B14").Value
+    Me.txtNumDays.Value = wsDrivers.Range("B15").Value
+
+    Me.txtStandardHours.Value = wsDrivers.Range("B16").Value
+    Me.txtOvertimeHours.Value = wsDrivers.Range("B17").Value
+    Me.txtWeekendHours.Value = wsDrivers.Range("B18").Value
+
+    Me.txtHotelRate.Value = wsDrivers.Range("B19").Value
+
+    Me.txtStandardRate.Value = wsDrivers.Range("B20").Value
+    Me.txtOvertimeRate.Value = wsDrivers.Range("B21").Value
+
+    Me.txtNumFlights.Value = wsDrivers.Range("B22").Value
+    Me.txtFlightRate.Value = wsDrivers.Range("B23").Value
+
+    Me.txtPerDiem.Value = wsDrivers.Range("B24").Value
+
+    Me.txtNumCar.Value = wsDrivers.Range("B25").Value
+    Me.txtCarRentRate.Value = wsDrivers.Range("B26").Value
+
+    Me.txtFuelRate.Value = wsDrivers.Range("B27").Value
+
+    Me.txtMileage.Value = wsDrivers.Range("B28").Value
+    Me.txtMileageRate.Value = wsDrivers.Range("B29").Value
+End Sub
