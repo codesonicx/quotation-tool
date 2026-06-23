@@ -236,3 +236,14 @@ Public Sub WriteGrandTotalFormulas(ByVal ws As Worksheet, _
     ws.Cells(GRAND_TOTALS_ROW, COL_PERCENT).Formula = "=(AF2-Y2)/+AF2"
     worksheetFormatter.ApplyEstimateNumberFormats ws, GRAND_TOTALS_ROW
 End Sub
+
+Public Sub WriteTimeMaterialComponentFormulas(ByVal ws As Worksheet, _
+                                              ByVal rowIndex As Long)
+
+    WriteComponentQuantities ws, rowIndex
+    WriteMarkupValues ws, rowIndex
+    WriteBudgetCostFormulas ws, rowIndex
+    WriteMarkupCostFormulas ws, rowIndex
+    WriteTotals ws, rowIndex
+
+End Sub

@@ -146,6 +146,8 @@ Private Sub HandleCreateAction()
     Set data = BuildTimeMaterialData()
     Set timeMaterialService = New clsTimeMaterialService
 
+    SaveInputsToDrivers
+
     success = timeMaterialService.InsertTimeMaterialSection( _
         ws, _
         data, _
@@ -342,4 +344,36 @@ Private Sub LoadDefaultsFromDrivers()
 
     Me.txtMileage.Value = wsDrivers.Range("B28").Value
     Me.txtMileageRate.Value = wsDrivers.Range("B29").Value
+End Sub
+
+Private Sub SaveInputsToDrivers()
+    Dim wsDrivers As Worksheet
+
+    Set wsDrivers = ThisWorkbook.Worksheets("Drivers")
+
+    wsDrivers.Range("B13").Value = Val(Me.txtNumPeople.Value)
+    wsDrivers.Range("B14").Value = Val(Me.txtNumWeeks.Value)
+    wsDrivers.Range("B15").Value = Val(Me.txtNumDays.Value)
+
+    wsDrivers.Range("B16").Value = Val(Me.txtStandardHours.Value)
+    wsDrivers.Range("B17").Value = Val(Me.txtOvertimeHours.Value)
+    wsDrivers.Range("B18").Value = Val(Me.txtWeekendHours.Value)
+
+    wsDrivers.Range("B19").Value = Val(Me.txtHotelRate.Value)
+
+    wsDrivers.Range("B20").Value = Val(Me.txtStandardRate.Value)
+    wsDrivers.Range("B21").Value = Val(Me.txtOvertimeRate.Value)
+
+    wsDrivers.Range("B22").Value = Val(Me.txtNumFlights.Value)
+    wsDrivers.Range("B23").Value = Val(Me.txtFlightRate.Value)
+
+    wsDrivers.Range("B24").Value = Val(Me.txtPerDiem.Value)
+
+    wsDrivers.Range("B25").Value = Val(Me.txtNumCar.Value)
+    wsDrivers.Range("B26").Value = Val(Me.txtCarRentRate.Value)
+
+    wsDrivers.Range("B27").Value = Val(Me.txtFuelRate.Value)
+
+    wsDrivers.Range("B28").Value = Val(Me.txtMileage.Value)
+    wsDrivers.Range("B29").Value = Val(Me.txtMileageRate.Value)
 End Sub
