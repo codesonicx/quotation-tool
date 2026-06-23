@@ -19,7 +19,7 @@ Option Explicit
 Public Sub ResetInsertedRows(ByVal targetRows As Range)
 
     targetRows.ClearFormats
-    targetRows.ClearOutline
+    targetRows.EntireRow.OutlineLevel = 1
 
 End Sub
 
@@ -53,7 +53,7 @@ End Sub
 Public Sub FormatCustomItemRow(ByVal targetRow As Range)
 
     targetRow.ClearFormats
-    targetRow.ClearOutline
+    targetRow.EntireRow.OutlineLevel = 1
     targetRow.Interior.Pattern = xlNone
 
     ApplyEstimateNumberFormats targetRow.Worksheet, targetRow.Row
@@ -76,7 +76,7 @@ Public Sub RefreshAssemblyChildGrouping(ByVal ws As Worksheet, _
 
     If lastChildRow < firstChildRow Then Exit Sub
 
-    ws.Rows(firstChildRow & ":" & lastChildRow).ClearOutline
+    ws.Rows(firstChildRow & ":" & lastChildRow).OutlineLevel = 1
     ws.Rows(firstChildRow & ":" & lastChildRow).Group
 
 End Sub
