@@ -40,11 +40,11 @@ End Sub
 ' =========================================================
 
 Private Sub txtStartDate_Exit(ByVal Cancel As MSForms.ReturnBoolean)
-    UpdateDaysFromDates
+    UpdateDurationFromDates
 End Sub
 
 Private Sub txtFinalDate_Exit(ByVal Cancel As MSForms.ReturnBoolean)
-    UpdateDaysFromDates
+    UpdateDurationFromDates
 End Sub
 
 Private Sub txtNumWeeks_Change()
@@ -52,6 +52,7 @@ Private Sub txtNumWeeks_Change()
 
     isRefreshing = True
     Me.txtNumDays.Value = CStr(Round(ToNumber(Me.txtNumWeeks.Value) * 7, 1))
+    UpdateFinalDateFromDays
     isRefreshing = False
 
     RefreshTotals
@@ -61,7 +62,8 @@ Private Sub txtNumDays_Change()
     If isRefreshing Then Exit Sub
 
     isRefreshing = True
-    Me.txtNumWeeks.Value = CStr(Round(ToNumber(Me.txtNumDays.Value) / 7, 1))
+    Me.txtNumWeeks.Value = CStr(Round(ToNumber(Me.txtNumDays.Value) / 7, 2))
+    UpdateFinalDateFromDays
     isRefreshing = False
 
     RefreshTotals
@@ -206,27 +208,26 @@ End Function
 ' Calculation helpers
 ' =========================================================
 
-Private Sub UpdateDaysFromDates()
-    Dim startText As String
-    Dim finalText As String
-    Dim dayCount As Long
+Private Sub UpdateDurationFromDates()
+    Dim dayCount As Double
 
-    startText = Trim$(Me.txtStartDate.Value)
-    finalText = Trim$(Me.txtFinalDate.Value)
+    If Trim$(Me.txtStartDate.Value) = "" Then Exit Sub
+    If Trim$(Me.txtFinalDate.Value) = "" Then Exit Sub
 
-    If startText = "" Or finalText = "" Then Exit Sub
-    If Not IsDate(startText) Or Not IsDate(finalText) Then Exit Sub
-
-    dayCount = DateDiff("d", CDate(startText), CDate(finalText))
-
-    If dayCount < 0 Then Exit Sub
+    dayCount = DateDiff("d", CDate(Me.txtStartDate.Value), CDate(Me.txtFinalDate.Value))
 
     isRefreshing = True
     Me.txtNumDays.Value = CStr(dayCount)
-    Me.txtNumWeeks.Value = CStr(Round(dayCount / 7, 1))
+    Me.txtNumWeeks.Value = CStr(Round(dayCount / 7, 2))
     isRefreshing = False
 
     RefreshTotals
+End Sub
+
+Private Sub UpdateFinalDateFromDays()
+    If Trim$(Me.txtStartDate.Value) = "" Then Exit Sub
+
+    Me.txtFinalDate.Value = Format$(DateAdd("d", ToNumber(Me.txtNumDays.Value), CDate(Me.txtStartDate.Value)), "mm/dd/yyyy")
 End Sub
 
 Private Sub RefreshTotals()
