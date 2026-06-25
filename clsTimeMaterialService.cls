@@ -82,12 +82,12 @@ Private Sub InsertTravelAssembly(ByVal wsTarget As Worksheet, _
 
     WriteAssemblyHeader wsTarget, assemblyRow, ASSEMBLY_TRAVEL
 
-    WriteTravelChild wsTarget, firstChildRow, ITEM_PER_DIEM, "=Drivers!B24*Drivers!B14*Drivers!B13"
-    WriteTravelChild wsTarget, firstChildRow + 1, ITEM_HOTEL, "=Drivers!B19*Drivers!B15*Drivers!B13"
-    WriteTravelChild wsTarget, firstChildRow + 2, ITEM_CAR_RENT, "=Drivers!B25*Drivers!B26*Drivers!B14"
-    WriteTravelChild wsTarget, firstChildRow + 3, ITEM_FUEL, "=Drivers!B27*Drivers!B14"
-    WriteTravelChild wsTarget, firstChildRow + 4, ITEM_MILEAGE, "=Drivers!B28*Drivers!B13*Drivers!B15*Drivers!B29"
-    WriteTravelChild wsTarget, firstChildRow + 5, ITEM_AIR, "=Drivers!B23*Drivers!B22*2"
+    WriteTravelChild wsTarget, firstChildRow, ITEM_PER_DIEM, "=Drivers!B24", "Drivers!B15*Drivers!B13"
+    WriteTravelChild wsTarget, firstChildRow + 1, ITEM_HOTEL, "=Drivers!B19", "Drivers!B15*Drivers!B13"
+    WriteTravelChild wsTarget, firstChildRow + 2, ITEM_CAR_RENT, "=Drivers!B26", "Drivers!B25*Drivers!B14"
+    WriteTravelChild wsTarget, firstChildRow + 3, ITEM_FUEL, "=Drivers!B27", "Drivers!B14"
+    WriteTravelChild wsTarget, firstChildRow + 4, ITEM_MILEAGE, "=Drivers!B29", "Drivers!B28*Drivers!B13*Drivers!B15"
+    WriteTravelChild wsTarget, firstChildRow + 5, ITEM_AIR, "=Drivers!B23", "Drivers!B22*2"
 
     FinalizeAssembly wsTarget, assemblyRow, firstChildRow, lastChildRow
 End Sub
@@ -106,11 +106,9 @@ Private Sub InsertLaborAssembly(ByVal wsTarget As Worksheet, _
 
     WriteAssemblyHeader wsTarget, assemblyRow, ASSEMBLY_LABOR
 
-    WriteLaborChild wsTarget, firstChildRow, ITEM_STANDARD_HOURS, _
-        "=Drivers!B16*5*Drivers!B14*Drivers!B13"
+    WriteLaborChild wsTarget, firstChildRow, ITEM_STANDARD_HOURS, "=Drivers!B16*5*Drivers!B14*Drivers!B13",  "Drivers!B20"
 
-    WriteLaborChild wsTarget, firstChildRow + 1, ITEM_OVERTIME_HOURS, _
-        "=(Drivers!B17*5+Drivers!B18)*Drivers!B14*Drivers!B13"
+    WriteLaborChild wsTarget, firstChildRow + 1, ITEM_OVERTIME_HOURS, "=(Drivers!B17*5+Drivers!B18)*Drivers!B14*Drivers!B13",  "Drivers!B21"
 
     FinalizeAssembly wsTarget, assemblyRow, firstChildRow, lastChildRow
 End Sub
@@ -144,15 +142,16 @@ End Sub
 Private Sub WriteTravelChild(ByVal wsTarget As Worksheet, _
                              ByVal rowIndex As Long, _
                              ByVal componentName As String, _
-                             ByVal materialFormula As String)
+                             ByVal materialRateFormula As String, _
+                             ByVal materialCostMultiplierFormula As String)
     Dim formulaService As clsFormulaService
 
     Set formulaService = New clsFormulaService
 
     wsTarget.Cells(rowIndex, COL_COMPONENT).value = componentName
 
-    wsTarget.Cells(rowIndex, COL_COMP_DES).value = 0
-    wsTarget.Cells(rowIndex, COL_COMP_BUILD).value = 0
+    wsTarget.Cells(rowIndex, COL_COMP_DES).value = 1
+    wsTarget.Cells(rowIndex, COL_COMP_BUILD).value = 1
 
     wsTarget.Cells(rowIndex, COL_DESIGN_HOURS).value = 0
     wsTarget.Cells(rowIndex, COL_CONSTRUCTION_HOURS).value = 0
@@ -160,24 +159,30 @@ Private Sub WriteTravelChild(ByVal wsTarget As Worksheet, _
     wsTarget.Cells(rowIndex, COL_INSTALLATION_HOURS).value = 0
     wsTarget.Cells(rowIndex, COL_STARTUP_HOURS).value = 0
 
-    wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).Formula = materialFormula
+    wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).Formula = materialRateFormula
 
     formulaService.WriteTimeMaterialComponentFormulas wsTarget, rowIndex
+
+    ' Override T&M material cost calculation.
+    wsTarget.Cells(rowIndex, COL_BUDGET_MATERIAL).Formula = "=" & _
+        wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).Address(False, False) & _
+        "*" & materialCostMultiplierFormula
 
 End Sub
 
 Private Sub WriteLaborChild(ByVal wsTarget As Worksheet, _
                             ByVal rowIndex As Long, _
                             ByVal componentName As String, _
-                            ByVal startupHoursFormula As String)
+                            ByVal startupHoursFormula As String, _
+                            ByVal laborRateFormula As String)
     Dim formulaService As clsFormulaService
 
     Set formulaService = New clsFormulaService
 
     wsTarget.Cells(rowIndex, COL_COMPONENT).value = componentName
 
-    wsTarget.Cells(rowIndex, COL_COMP_DES).value = 0
-    wsTarget.Cells(rowIndex, COL_COMP_BUILD).value = 0
+    wsTarget.Cells(rowIndex, COL_COMP_DES).value = 1
+    wsTarget.Cells(rowIndex, COL_COMP_BUILD).value = 1
 
     wsTarget.Cells(rowIndex, COL_DESIGN_HOURS).value = 0
     wsTarget.Cells(rowIndex, COL_CONSTRUCTION_HOURS).value = 0
@@ -185,12 +190,15 @@ Private Sub WriteLaborChild(ByVal wsTarget As Worksheet, _
     wsTarget.Cells(rowIndex, COL_INSTALLATION_HOURS).value = 0
 
     wsTarget.Cells(rowIndex, COL_STARTUP_HOURS).Formula = startupHoursFormula
-    wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).Formula = 0
-
-    wsTarget.Cells(rowIndex, COL_STARTUP_HOURS).Formula = startupHoursFormula
-    wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).Formula = 0
+    wsTarget.Cells(rowIndex, COL_MATERIAL_RATE).value = 0
 
     formulaService.WriteTimeMaterialComponentFormulas wsTarget, rowIndex
+
+    ' Override T&M labor cost calculation in column X.
+    wsTarget.Cells(rowIndex, COL_BUDGET_MATERIAL).Formula = "=" & _
+        wsTarget.Cells(rowIndex, COL_STARTUP_HOURS).Address(False, False) & _
+        "*" & laborRateFormula
+
 End Sub
 
 Private Sub FinalizeAssembly(ByVal wsTarget As Worksheet, _
