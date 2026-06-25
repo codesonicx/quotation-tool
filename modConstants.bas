@@ -142,7 +142,7 @@ Public Const COL_PERCENT As Long = 33
 ' Number formats
 ' =========================================================
 Public Const FORMAT_INTEGER As String = "#,##0"
-Public Const FORMAT_DECIMAL As String = "#,##0.0"
+Public Const FORMAT_DECIMAL As String = "#,##0.##"
 Public Const FORMAT_CURRENCY As String = "$#,##0.00"
 Public Const FORMAT_PERCENT As String = "0%"
 
