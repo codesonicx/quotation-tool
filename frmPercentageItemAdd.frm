@@ -3,8 +3,8 @@ Option Explicit
 ' =========================================================
 ' Form configuration constants
 ' =========================================================
-Private Const FORM_HEIGHT As Long = 350
-Private Const FORM_WIDTH As Long = 530
+Private Const FORM_HEIGHT As Long = 225
+Private Const FORM_WIDTH As Long = 430
 Private Const FORM_TITLE As String = "Add Percentage Item"
 
 ' =========================================================
