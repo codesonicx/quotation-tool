@@ -117,7 +117,7 @@ Private Sub WritePercentItemRow(ByVal ws As Worksheet, _
                                 ByVal includeInstallation As Boolean)
 
     ws.Cells(rowIndex, COL_COMP_LIST).value = GetNextComponentListNumber(ws, rowIndex)
-    ws.Cells(rowIndex, COL_COMPONENT).value = componentName
+    ws.Cells(rowIndex, COL_COMPONENT).Value = BuildPercentComponentName(percentAmount, componentName)
 
     ws.Cells(rowIndex, COL_COMP_DES).value = 1
     ws.Cells(rowIndex, COL_COMP_BUILD).value = 1
@@ -237,3 +237,7 @@ Private Sub WritePercentItemCostFormulas(ByVal ws As Worksheet, _
 
 End Sub
 
+Private Function BuildPercentComponentName(ByVal percentAmount As Double, _
+                                           ByVal componentName As String) As String
+    BuildPercentComponentName = "[" & CStr(percentAmount) & "%] - " & componentName
+End Function
