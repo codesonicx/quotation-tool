@@ -157,6 +157,8 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
 
     Set insertedRows = wsTarget.Rows(insertRow & ":" & (insertRow + rowsToInsert - 1))
 
+    Dim formulaService As clsFormulaService
+    Set formulaService = New clsFormulaService
     Dim worksheetFormatter As clsWorksheetFormatter
     Set worksheetFormatter = New clsWorksheetFormatter
 
@@ -174,6 +176,12 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
     ' Group only the child rows below the assembly header.
     firstChildRow = insertRow + 1
     lastChildRow = insertRow + rowsToInsert - 1
+
+    formulaService.WriteAssemblyTotalFormulas _
+        wsTarget, _
+        insertRow, _
+        firstChildRow, _
+        lastChildRow
 
     worksheetFormatter.GroupAssemblyChildRows _
         wsTarget, _
