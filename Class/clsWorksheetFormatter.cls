@@ -136,16 +136,16 @@ Public Sub ApplyInsertedAssemblyNumberFormats(ByVal ws As Worksheet, _
 
     ws.Range(ws.Cells(firstRow, COL_SECTION_NAME), ws.Cells(lastRow, COL_ITEM)).NumberFormat = "General"
 
-    ws.Range(ws.Cells(firstRow, COL_ITEM_DES), ws.Cells(lastRow, COL_COMP_LIST)).NumberFormat = "0"
+    ws.Range(ws.Cells(firstRow, COL_ITEM_DES), ws.Cells(lastRow, COL_COMP_LIST)).NumberFormat = FORMAT_INTEGER
     ws.Range(ws.Cells(firstRow, COL_COMPONENT), ws.Cells(lastRow, COL_COMPONENT)).NumberFormat = "General"
-    ws.Range(ws.Cells(firstRow, COL_COMP_DES), ws.Cells(lastRow, COL_SECT_BUILD)).NumberFormat = "0"
+    ws.Range(ws.Cells(firstRow, COL_COMP_DES), ws.Cells(lastRow, COL_SECT_BUILD)).NumberFormat = FORMAT_INTEGER
 
-    ws.Range(ws.Cells(firstRow, COL_MATERIAL_MARKUP), ws.Cells(lastRow, COL_LABOR_MARKUP)).NumberFormat = "0%"
+    ws.Range(ws.Cells(firstRow, COL_MATERIAL_MARKUP), ws.Cells(lastRow, COL_LABOR_MARKUP)).NumberFormat = FORMAT_PERCENT
 
-    ws.Range(ws.Cells(firstRow, COL_DESIGN_HOURS), ws.Cells(lastRow, COL_STARTUP_HOURS)).NumberFormat = "0.00"
+    ws.Range(ws.Cells(firstRow, COL_DESIGN_HOURS), ws.Cells(lastRow, COL_STARTUP_HOURS)).NumberFormat = FORMAT_DECIMAL
 
-    ws.Range(ws.Cells(firstRow, COL_MATERIAL_RATE), ws.Cells(lastRow, COL_MARKUP_TOTAL)).NumberFormat = "$#,##0.00"
+    ws.Range(ws.Cells(firstRow, COL_MATERIAL_RATE), ws.Cells(lastRow, COL_MARKUP_TOTAL)).NumberFormat = FORMAT_CURRENCY
 
-    ws.Range(ws.Cells(firstRow, COL_PERCENT), ws.Cells(lastRow, COL_PERCENT)).NumberFormat = "0%"
+    ws.Range(ws.Cells(firstRow, COL_PERCENT), ws.Cells(lastRow, COL_PERCENT)).NumberFormat = FORMAT_PERCENT
 
 End Sub
