@@ -24,6 +24,7 @@ Public Function InsertCustomAssemblyWithComponents(ByVal wsTarget As Worksheet, 
     Dim sectionService As clsSectionService
     Dim componentFinder As clsComponentListFinder
     Dim generatedAssemblyService As clsGeneratedAssemblyService
+    Dim worksheetFormatter As clsWorksheetFormatter
 
     Dim sectionRow As Long
     Dim insertRow As Long
@@ -45,6 +46,7 @@ Public Function InsertCustomAssemblyWithComponents(ByVal wsTarget As Worksheet, 
     Set sectionService = New clsSectionService
     Set componentFinder = New clsComponentListFinder
     Set generatedAssemblyService = New clsGeneratedAssemblyService
+    Set worksheetFormatter = New clsWorksheetFormatter
 
     If assemblyName = vbNullString Then
         errorMessage = "Assembly name cannot be empty."
@@ -97,6 +99,11 @@ Public Function InsertCustomAssemblyWithComponents(ByVal wsTarget As Worksheet, 
         InsertCustomAssemblyWithComponents = False
         Exit Function
     End If
+
+    worksheetFormatter.ApplyInsertedAssemblyNumberFormats _
+    wsTarget, _
+    assemblyRow, _
+    lastChildRow
 
     If Not sectionService.RecalculateSectionTotals(wsTarget, sectionName, errorMessage) Then
         InsertCustomAssemblyWithComponents = False
