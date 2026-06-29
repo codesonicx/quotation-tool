@@ -188,5 +188,10 @@ Private Function CopyAssemblyBlockIntoTarget(ByVal wsLib As Worksheet, _
         firstChildRow, _
         lastChildRow
 
+    worksheetFormatter.ApplyInsertedAssemblyNumberFormats _
+        wsTarget, _
+        insertRow, _
+        lastChildRow
+
     CopyAssemblyBlockIntoTarget = True
 End Function
