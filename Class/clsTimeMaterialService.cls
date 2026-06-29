@@ -221,6 +221,12 @@ Private Sub FinalizeAssembly(ByVal wsTarget As Worksheet, _
         wsTarget, _
         firstChildRow, _
         lastChildRow
+
+    formatter.ApplyInsertedAssemblyNumberFormats _
+        wsTarget, _
+        assemblyRow, _
+        lastChildRow
+        
 End Sub
 
 
